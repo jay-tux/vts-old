@@ -1,0 +1,7 @@
+#load <faculty.vts>;
+#load <fibonacci.vts>;
+
+outer action main is void () {
+    stdout(new faculty().calc(new fibonacci().calc(6)));
+    stderr("No errors!");
+}

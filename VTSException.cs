@@ -1,11 +1,11 @@
 using System;
-using System.Collection.Generic;
+using System.Collections.Generic;
 
 namespace Jay.VTS
 {
 	public class VTSException : Exception
 	{
-		public string StackTrace;
+		public new string StackTrace;
 		public string Type;
 		public VTSException Cause;
 		public VTSException(string Type, StackFrame Stack, string Message, VTSException Cause) 
@@ -28,13 +28,14 @@ namespace Jay.VTS
 			List<string> frames = new List<string>();
 			while(Stack.Parent != null)
 			{
-				frames.add($"\t{(string)Stack}: {(int)Stack}";
+				frames.Add($"\t{(string)Stack}: {(int)Stack}");
 			}
-			return frames.Join("\n");
+			return string.Join(", ", frames);
 		}
 	}
 }
 /*
  *	INTERNAL ERROR TYPES
  * -> IOLoadError -> can't load source file (not found, no perms)
+ * -> SyntaxError -> syntax error (in preproc) (newline in constant, ...)
  */

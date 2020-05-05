@@ -6,18 +6,17 @@ using System.Windows.Forms;
 
 namespace Jay.VTS
 {
-	static class Program
+	public class Program
 	{
-		/// <summary>
-		///  The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		static void Main(string[] args)
+		public static Program Instance = new Program();
+		public List<string> LoadedFiles = new List<string>();
+
+		public void Start(string[] args)
 		{
 			try
 			{
-				new Interpreter(args.length < 1 ? "--interactive" : args[0])
-					.LoadVTSModules().LoadImports().FirstPass().SecondPass();
+				new Interpreter(args.Length < 1 ? "--interactive" : args[0])
+					.FirstPass().LoadVTSModules().LoadImports().SecondPass();
 			}
 			catch(VTSException vtse)
 			{
@@ -32,6 +31,15 @@ namespace Jay.VTS
 					vtse = vtse.Cause;
 				}
 			}
+		}
+
+		/// <summary>
+		///  The main entry point for the application.
+		/// </summary>
+		[STAThread]
+		static void Main(string[] args)
+		{
+			Instance.Start(args);
 			/*Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
