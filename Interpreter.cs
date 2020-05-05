@@ -58,7 +58,8 @@ namespace Jay.VTS
 				Contents = new List<CodeBlock>() { Pass },
 				Lineno = -1,
 				Line = "",
-				File = "<root of source>"
+				File = "<root of source>",
+				Type = "root"
 			};
 			new ImportModule().LoadSource(Pass, Root);
 			return this;
@@ -69,6 +70,9 @@ namespace Jay.VTS
 		}
 		public Interpreter SecondPass() {
 			Root.Contents.ForEach(fil => Console.WriteLine((string)fil + "\n"));
+			Console.WriteLine(" ------ ");
+			new StackFrame(Root).Execute();
+			Console.WriteLine(" ------ ");
 			return this;
 		}
 

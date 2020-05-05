@@ -26,9 +26,11 @@ namespace Jay.VTS
 		private string GenTrace(StackFrame Stack)
 		{
 			List<string> frames = new List<string>();
-			while(Stack.Parent != null)
+			StackFrame curr = Stack;
+			while(curr != null)
 			{
-				frames.Add($"\t{(string)Stack}: {(int)Stack}");
+				frames.Add($"\t{(string)curr}: {(int)curr}");
+				curr = curr.Parent;
 			}
 			return string.Join(", ", frames);
 		}

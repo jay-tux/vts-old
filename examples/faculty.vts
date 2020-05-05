@@ -1,6 +1,6 @@
 class faculty {
     action calc is int (base is int) {
-        if(base == 1) {
+        if (base == 1) {
             return base;
         }
         return base * calc(base - 1);

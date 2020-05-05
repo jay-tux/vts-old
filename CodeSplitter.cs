@@ -24,7 +24,8 @@ namespace Jay.VTS
                 File = File,
                 Lineno = 0,
                 Parent = null,
-                Contents = new List<CodeBlock>()
+                Contents = new List<CodeBlock>(),
+                Type = "file"
             };
             CodeBlock current = data;
             int lineno = 1;
@@ -58,8 +59,10 @@ namespace Jay.VTS
                                 IsLine = false,
                                 File = this.File,
                                 Parent = current,
-                                Contents = new List<CodeBlock>()
+                                Contents = new List<CodeBlock>(),
                             };
+                            inner.Type = inner.Line.Split(' ')[0];
+                            if(inner.Type.Length < 4) { inner.Type += "  "; }
                             current.Contents.Add(inner);
                             current = inner;
                             currLine = "";
@@ -78,7 +81,8 @@ namespace Jay.VTS
                                 File = this.File,
                                 Line = Regex.Replace(currLine.TrimStart(), @"\s+", " "),
                                 Contents = null,
-                                Lineno = lineno
+                                Lineno = lineno,
+                                Type = "code"
                             });
                             currLine = "";
                         break;

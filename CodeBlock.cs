@@ -11,6 +11,7 @@ namespace Jay.VTS
         public List<CodeBlock> Contents { get; set; }
         public CodeBlock Parent { get; set; }
         public bool IsLine { get; set; }
+        public string Type { get; set; }
 
         public static explicit operator string(CodeBlock target) => target.ToString(0);
 
@@ -18,12 +19,12 @@ namespace Jay.VTS
             List<string> lines = new List<string>();
             if(depth == 0) { lines.Add($" --- Beginning of Code Block --- \n  [{File}]\n"); }
             string res = "";
-            res += Lineno + ": ";
-            for(int i = 0; i < depth; i++) { res += " "; }
+            res += "[" + Lineno.ToString().PadLeft(4) + "]\t";
+            for(int i = 0; i < depth; i++) { res += "\t"; }
             res += Line;
             lines.Add(res);
             if(Contents != null) {
-                Contents.ForEach(line => lines.Add(line.ToString(depth + 4) + ""));
+                Contents.ForEach(line => lines.Add(line.ToString(depth + 1) + ""));
             }
             return String.Join("\n", lines) + (depth == 0 ? "\n --- End of Code Block --- " : "");
         }
