@@ -10,6 +10,7 @@ namespace Jay.VTS
 	{
 		public static Program Instance = new Program();
 		public List<string> LoadedFiles = new List<string>();
+		public int ExitCode { set => Environment.ExitCode = value; }
 
 		public void Start(string[] args)
 		{

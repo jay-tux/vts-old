@@ -68,11 +68,31 @@ namespace Jay.VTS
 			Pass = new CodeSplitter(_native, Filename).SplitCode();
 			return this;
 		}
+		
 		public Interpreter SecondPass() {
 			Root.Contents.ForEach(fil => Console.WriteLine((string)fil + "\n"));
-			Console.WriteLine(" ------ ");
-			new StackFrame(Root).Execute();
-			Console.WriteLine(" ------ ");
+			//Console.WriteLine(" ------ ");
+			StackFrame rootFrame = new StackFrame(Root);
+			rootFrame.StackFrameReturns += (src, args) => {
+				switch(args.ExitCode) {
+					case FrameEventArgs.Exits.Return:
+					case FrameEventArgs.Exits.ReturnValue:
+						Program.Instance.ExitCode = 0;
+						break;
+
+					case FrameEventArgs.Exits.CodeException:
+						Program.Instance.ExitCode = (int)args.ExitCode;
+						throw args.Error;
+
+					case FrameEventArgs.Exits.InternalException:
+						Console.Error.WriteLine(" ==== An internal error has occured. ==== \nPlease notify the developer of " + 
+							"the following error:\n" + args.InternalError);
+						Program.Instance.ExitCode = (int)args.ExitCode;
+						break;
+				}
+			};
+			rootFrame.Execute();
+			//Console.WriteLine(" ------ ");
 			return this;
 		}
 

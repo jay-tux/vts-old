@@ -1,5 +1,5 @@
 class fibonacci {
-    action calc is int(base is int) {
+    action calc (base) {
         if (base == 1 OR base == 2) {
             return base;
         }
@@ -7,7 +7,7 @@ class fibonacci {
         return fibonacci(base - 1) + fibonacci(base - 2);
     }
     
-    action new is fibonacci() {
+    action new () {
 
     }
 }

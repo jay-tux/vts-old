@@ -7,6 +7,7 @@ namespace Jay.VTS
         public StackFrame Parent;
         public CodeBlock Root;
         public CodeBlock Pointer;
+        public event EventHandler<FrameEventArgs> StackFrameReturns;
 
         public StackFrame(CodeBlock Root) {
             this.Root = Root;
@@ -36,7 +37,12 @@ namespace Jay.VTS
         }
 
         public void Execute() {
-            Console.WriteLine("In StackFrame: " + (string)this + "; line: " + (int)this);
+            
+        }
+
+        protected virtual void OnStackFrameReturns(FrameEventArgs e) {
+            EventHandler<FrameEventArgs> handler= StackFrameReturns;
+            if(handler != null) handler(this, e);
         }
 
         public static explicit operator string(StackFrame val) => val.Root.File;

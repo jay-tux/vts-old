@@ -1,12 +1,12 @@
 class faculty {
-    action calc is int (base is int) {
+    action calc (base) {
         if (base == 1) {
             return base;
         }
         return base * calc(base - 1);
     }
 
-    action new is faculty () {
+    action new () {
 
     }
 }

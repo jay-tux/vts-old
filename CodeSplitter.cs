@@ -12,7 +12,7 @@ namespace Jay.VTS
 
         public CodeSplitter(string code, string file)
         {
-            OGCode = code;
+            OGCode = string.Join('\n', code.Split('\n').ToList().Where(x => !x.Trim().StartsWith("//")));
             File = file;
         }
 
@@ -25,7 +25,9 @@ namespace Jay.VTS
                 Lineno = 0,
                 Parent = null,
                 Contents = new List<CodeBlock>(),
-                Type = "file"
+                Split = null,
+                Type = "file",
+                Line = null
             };
             CodeBlock current = data;
             int lineno = 1;
@@ -45,6 +47,7 @@ namespace Jay.VTS
                     {
                         case '"':
                             inString = true;
+                            currLine += '"';
                         break; 
 
                         case '\n':
@@ -61,6 +64,7 @@ namespace Jay.VTS
                                 Parent = current,
                                 Contents = new List<CodeBlock>(),
                             };
+                            inner.Split = new LineSplitter(inner, (File, lineno)).SplitTarget();
                             inner.Type = inner.Line.Split(' ')[0];
                             if(inner.Type.Length < 4) { inner.Type += "  "; }
                             current.Contents.Add(inner);
@@ -76,7 +80,7 @@ namespace Jay.VTS
                         break;
 
                         case ';':
-                            current.Contents.Add(new CodeBlock(){
+                            CodeBlock vl = (new CodeBlock(){
                                 IsLine = true,
                                 File = this.File,
                                 Line = Regex.Replace(currLine.TrimStart(), @"\s+", " "),
@@ -84,6 +88,8 @@ namespace Jay.VTS
                                 Lineno = lineno,
                                 Type = "code"
                             });
+                            vl.Split = new LineSplitter(vl, (File, lineno)).SplitTarget();
+                            current.Contents.Add(vl);
                             currLine = "";
                         break;
 

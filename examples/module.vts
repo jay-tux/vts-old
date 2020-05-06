@@ -2,6 +2,6 @@
 #load <fibonacci.vts>;
 
 entry () {
-    stdout(new faculty().calc(new fibonacci().calc(6)));
+    stdout(faculty.new().calc(fibonacci.new().calc(6)));
     stderr("No errors!");
 }
