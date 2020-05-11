@@ -1,6 +1,6 @@
 using System;
 
-namespace Jay.VTS
+namespace Jay.VTS.Execution
 {
     public class FrameEventArgs : EventArgs 
     {

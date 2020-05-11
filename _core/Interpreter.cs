@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
+using Jay.VTS.Enums;
+using Jay.VTS.Parser;
+using Jay.VTS.Structures;
+using Jay.VTS.Execution;
 
 namespace Jay.VTS
 {
@@ -15,9 +19,13 @@ namespace Jay.VTS
 		public CodeBlock Pass;
 		public CodeBlock Root;
 		public string Filename { get; }
+		public List<VTSAction> Actions = new List<VTSAction>();
+		public List<VTSClass> Classes = new List<VTSClass>();
+		public static Interpreter Instance;
 
 		public Interpreter(string file)
 		{
+			Instance = this;
 			if(file == "--interactive")
 			{
 				//start interactive session
@@ -68,7 +76,6 @@ namespace Jay.VTS
 			Pass = new CodeSplitter(_native, Filename).SplitCode();
 			return this;
 		}
-		
 		public Interpreter SecondPass() {
 			Root.Contents.ForEach(fil => Console.WriteLine((string)fil + "\n"));
 			//Console.WriteLine(" ------ ");
@@ -94,6 +101,14 @@ namespace Jay.VTS
 			rootFrame.Execute();
 			//Console.WriteLine(" ------ ");
 			return this;
+		}
+
+		public void AddClass(CodeBlock newClass) {
+			//
+		}
+
+		public void AddAction(CodeBlock newAction) {
+			//
 		}
 
 		public void Add(string Import) => _imported.Add(Import);

@@ -32,7 +32,7 @@ while getopts 'crh' opt; do
 done
 
 if [[ $compile == 'true' ]]; then
-	mcs -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-parse.exe -main:Jay.VTS.Program *.cs 
+	mcs -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-parse.exe -main:Jay.VTS.Program *.cs */*.cs
 	if [[ $? != 0 ]]; then
 		>&2 echo "Failed to compile." 
 		exit -1

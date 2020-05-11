@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Jay.VTS;
+using Jay.VTS.Enums;
 
-namespace Jay.VTS
+namespace Jay.VTS.Parser
 {
     public class LineSplitter 
     {
@@ -177,62 +179,4 @@ namespace Jay.VTS
             return ElementType.Identifier;
         }
     }
-
-    public class LineElement
-    {
-        public ElementType Type;
-        public string Content;
-        public List<LineElement> Inner;
-        public LineElement Parent;
-
-        public string ToOneliner() {
-            if(Type == ElementType.Block) {
-                string res = "[ ";
-                List<string> data = new List<string>();
-                Inner.ForEach(x => data.Add(x.ToOneliner()));
-                res += string.Join(", ", data);
-                res += " ]";
-                return res;
-            }
-            else {
-                return "{ " + Content + ": " + Type + " }";
-            }
-        }
-
-        public string ToString(uint Offset) {
-            if(Type == ElementType.Block) {
-                List<string> res = new List<string>();
-                /*string tmp = "";
-                for(int i = 0; i < Offset; i++) { tmp += "\t"; }
-                res.Add(tmp + $"[{Type}] {Inner.Count}");*/
-                Inner.ForEach( x => res.Add(x.ToString(Offset + 1)));
-                return string.Join("\n", res);
-            }
-            else {
-                string res = "";
-                for(int i = 0; i < Offset; i++) { res += "  "; }
-                return res + $"[{Type}]{Content}";
-            }
-        }
-    }
-
-    public enum ElementType { 
-        Block = -0x10,
-
-        None = 0x00,
-        Void,
-
-        Class = 0x10,
-        Action,
-        Control,
-        Return,
-        Member,
-
-        Identifier = 0x20,
-        Literal,
-        
-        Operator = 0x30,
-        
-        Comment = 0x40
-     }
 }

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Jay.VTS;
 
-namespace Jay.VTS
+namespace Jay.VTS.Parser
 {
     public class CodeBlock
     {

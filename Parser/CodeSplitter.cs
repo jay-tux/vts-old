@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Jay.VTS;
+using Jay.VTS.Enums;
 
-namespace Jay.VTS
+namespace Jay.VTS.Parser
 {
     public class CodeSplitter
     {
@@ -65,6 +67,9 @@ namespace Jay.VTS
                                 Contents = new List<CodeBlock>(),
                             };
                             inner.Split = new LineSplitter(inner, (File, lineno)).SplitTarget();
+                            if(inner.Split.Type == ElementType.Class) { 
+                                
+                            }
                             inner.Type = inner.Line.Split(' ')[0];
                             if(inner.Type.Length < 4) { inner.Type += "  "; }
                             current.Contents.Add(inner);
