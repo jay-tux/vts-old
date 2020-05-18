@@ -14,7 +14,8 @@ namespace Jay.VTS.Parser
             "if", "else", "elseif", "while", "do", "for", "foreach", "unless"
         };
         public static List<string> Operator = new List<string>(){
-            "=", "==", "+=", "*=", "-=", "/=", "%=", "*", "-", "+", "*", "/", "%", "!=", "~"
+            "=", "==", "+=", "*=", "-=", "/=", "%=", "*", "-", "+", "*", "/", "%", "!=", "~", 
+            "AND", "OR", "NOT"
         };
         public static List<string> MultChar = new List<string>(){
             "\\n", "\\t", "\\r"
@@ -31,6 +32,13 @@ namespace Jay.VTS.Parser
                 Inner = new List<LineElement>(),
                 Content = ""
             };
+            if(Target.Line.StartsWith("#")) {
+                return new LineElement() {
+                    Type = ElementType.Preproc,
+                    Inner = null,
+                    Content = ""
+                };
+            }
 
             string currStr = "";
             LineElement pointer = root;

@@ -5,6 +5,7 @@ namespace Jay.VTS.Enums
 
         None = 0x00,
         Void,
+        Preproc,
 
         Class = 0x10,
         Action,
