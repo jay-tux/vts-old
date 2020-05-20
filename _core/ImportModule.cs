@@ -17,7 +17,7 @@ namespace Jay.VTS
 					string loadFile = block.Line.TrimStart().Split('<')[1].Split('>')[0];
 					fPath[fPath.Length - 1] = loadFile;
 					if(!Program.Instance.LoadedFiles.Contains(string.Join("/", fPath))) {
-						CodeBlock val = new Interpreter(string.Join("/", fPath)).FirstPass().LoadVTSModules().LoadImports().Root;
+						CodeBlock val = Interpreter.CreateLow(string.Join("/", fPath)).FirstPass().LoadVTSModules().LoadImports().Root;
 						val.Contents.ForEach(rt => Root.Contents.Insert(0, rt));
 					}
 				}

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Jay.VTS.Parser;
 
 namespace Jay.VTS.Execution
@@ -8,6 +9,7 @@ namespace Jay.VTS.Execution
         public StackFrame Parent;
         public CodeBlock Root;
         public CodeBlock Pointer;
+        private int Index;
         public event EventHandler<FrameEventArgs> StackFrameReturns;
 
         public StackFrame(CodeBlock Root) {
@@ -38,7 +40,8 @@ namespace Jay.VTS.Execution
         }
 
         public void Execute() {
-            
+            Console.WriteLine("Currently at: " + (string)Pointer);
+            Interpreter.Instance.PrintAll();
         }
 
         protected virtual void OnStackFrameReturns(FrameEventArgs e) {

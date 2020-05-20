@@ -19,13 +19,23 @@ namespace Jay.VTS
 		public CodeBlock Pass;
 		public CodeBlock Root;
 		public string Filename { get; }
-		public List<VTSAction> Actions = new List<VTSAction>();
-		public List<VTSClass> Classes = new List<VTSClass>();
+		public List<VTSClass> Classes;
 		public static Interpreter Instance;
 
-		public Interpreter(string file)
+		public static void Create(string file) {
+			if(Instance == null) {
+				Instance = new Interpreter(file);
+			}
+			else {
+				Console.Error.WriteLine(" --> Instance is already set.");
+			}
+		}
+
+		public static Interpreter CreateLow(string file) => new Interpreter(file);
+
+		private Interpreter(string file)
 		{
-			Instance = this;
+			Classes = new List<VTSClass>();
 			if(file == "--interactive")
 			{
 				//start interactive session
@@ -59,6 +69,19 @@ namespace Jay.VTS
 		public Interpreter LoadVTSModules() {
 			return this;
 		}
+
+		public bool ContainsClass(string ClassName) => this.Classes.Select(x => x.Name).Contains(ClassName);
+		public void PrintClasses() => Console.WriteLine(Classes.Count + " Classes in memory: " + string.Join(", ", Classes));
+		public void AddClass(VTSClass ClassCode) => this.Classes.Add(ClassCode);
+		public void PrintAll() {
+			Console.WriteLine(" ===== Current Memory Structures: =====");
+			Classes.ForEach(cls => {
+				Console.WriteLine(" -> " + cls + " [" + cls.Actions.Keys.Count +" actions]");
+				cls.Actions.Values.ToList().ForEach(act => Console.WriteLine("   -> " + act));
+			});
+			Console.WriteLine(" ===== End of Overview ===== ");
+		}
+
 		public Interpreter LoadImports() {
 			Root = new CodeBlock() {
 				Parent = null,
@@ -101,14 +124,6 @@ namespace Jay.VTS
 			rootFrame.Execute();
 			//Console.WriteLine(" ------ ");
 			return this;
-		}
-
-		public void AddClass(CodeBlock newClass) {
-			//
-		}
-
-		public void AddAction(CodeBlock newAction) {
-			//
 		}
 
 		public void Add(string Import) => _imported.Add(Import);

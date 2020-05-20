@@ -16,8 +16,8 @@ namespace Jay.VTS
 		{
 			try
 			{
-				new Interpreter(args.Length < 1 ? "--interactive" : args[0])
-					.FirstPass().LoadVTSModules().LoadImports().SecondPass();
+				Interpreter.Create(args.Length < 1 ? "--interactive" : args[0]);
+				Interpreter.Instance.FirstPass().LoadVTSModules().LoadImports().SecondPass();
 			}
 			catch(VTSException vtse)
 			{

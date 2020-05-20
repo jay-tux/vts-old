@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Jay.VTS;
 using Jay.VTS.Enums;
+using Jay.VTS.Structures;
 
 namespace Jay.VTS.Parser
 {
@@ -20,6 +21,9 @@ namespace Jay.VTS.Parser
 
         public CodeBlock SplitCode()
         {
+            VTSClass containing = null;
+            CodeBlock method = null;
+            int depth = 0;
             CodeBlock data = new CodeBlock()
             {
                 IsLine = false,
@@ -67,8 +71,57 @@ namespace Jay.VTS.Parser
                                 Contents = new List<CodeBlock>(),
                             };
                             inner.Split = new LineSplitter(inner, (File, lineno)).SplitTarget();
-                            if(inner.Split.Type == ElementType.Class) { 
-                                
+                            if(inner.Split.Inner[0].Type == ElementType.Class) {
+                                Console.WriteLine("Found class " + inner.Split.Inner[1].Content);
+                                if(containing != null) {
+                                    throw new VTSException("SyntaxError", "firstPass::code",
+                                        "In <" + this.File + ">, on line <" + lineno + 
+                                        ">: Class within class is not allowed.");
+                                }
+                                if(method != null) {
+                                    throw new VTSException("SyntaxError", "firstPass::code",
+                                        "In <" + this.File + ">, on line <" + lineno +
+                                        ">: Class within action is not allowed.");
+                                }
+                                if(Interpreter.Instance.ContainsClass(inner.Split.Inner[1].Content)) {
+                                    throw new VTSException("SyntaxError", "firstPass::code", 
+                                        "In <" + this.File + "> on line <" + lineno + ">: Class <" + 
+                                        inner.Split.Inner[1].Content + "> is already defined.");
+                                }
+                                else {
+                                    //Interpreter.Instance.AddClass(inner);
+                                    containing = (VTSClass)inner;
+                                    //Interpreter.Instance.PrintClasses();
+                                }
+                            }
+                            else if(inner.Split.Inner[0].Type == ElementType.Action) {
+                                Console.WriteLine("Found action " + inner.Split.Inner[1].Content + " in " + containing);
+                                if(containing == null){
+                                    throw new VTSException("SyntaxError", "firstPass::code",
+                                        "Code-structure <action> " + inner.Split.Inner[1].Content + 
+                                        ", as defined in <" + this.File + "> on line <" + lineno +
+                                        ">, can only exist within a <class> or as an <entry>.");
+                                }
+                                if(method != null) {
+                                    throw new VTSException("SyntaxError", "firstPass::code",
+                                        "In <" + this.File + ">, on line <" + lineno + 
+                                        " >: Action within action is not allowed.");
+                                }
+                                else if(containing.Contains(inner.Split.Inner[1].Content)) {
+                                    throw new VTSException("SyntaxError", "firstPass::code",
+                                        "In <" + this.File + ">, on line <" + lineno + ">: Action or Field <" +
+                                        inner.Split.Inner[1].Content + "> is already defined in class <" +
+                                        containing.Name + ">.");
+                                }
+                                else {
+                                    method = inner;
+                                    //containing.Actions[inner.Split.Inner[1].Content] = (VTSAction)inner;
+                                    //containing.PrintActions();
+                                }
+                            }
+                            else 
+                            {
+                                depth++;
                             }
                             inner.Type = inner.Line.Split(' ')[0];
                             if(inner.Type.Length < 4) { inner.Type += "  "; }
@@ -80,6 +133,19 @@ namespace Jay.VTS.Parser
                         case '}':
                             if(current.Parent == null) { throw new VTSException("SyntaxError", "firstPass::code", 
                                 "Unexpected '}' in <" + File + "> on line <" + lineno + ">"); }
+                                if(depth == 0) {
+                                    if(method != null) {
+                                        containing.Actions[method.Split.Inner[1].Content] = (VTSAction)method;
+                                        method = null;
+                                    }
+                                    else if(containing != null) {
+                                        Interpreter.Instance.AddClass(containing);
+                                        containing = null;
+                                    }
+                                }
+                                else {
+                                    depth--;
+                                }
                             current = current.Parent;
                             currLine = "";
                         break;
