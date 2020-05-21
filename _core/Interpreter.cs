@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
+using Jay.Xtend;
 using Jay.VTS.Enums;
 using Jay.VTS.Parser;
 using Jay.VTS.Structures;
@@ -77,7 +78,9 @@ namespace Jay.VTS
 			Console.WriteLine(" ===== Current Memory Structures: =====");
 			Classes.ForEach(cls => {
 				Console.WriteLine(" -> " + cls + " [" + cls.Actions.Keys.Count +" actions]");
-				cls.Actions.Values.ToList().ForEach(act => Console.WriteLine("   -> " + act));
+				cls.Fields.Keys.ForEach(fld => Console.WriteLine("   -> Field::" + fld));
+				cls.Actions.Values.ForEach(act => Console.WriteLine("   -> Action::" + act));
+				cls.Operators.AsEnumerable().ForEach(x => Console.WriteLine("   -> Operator<" + x.Key + ">::" + x.Value));
 			});
 			Console.WriteLine(" ===== End of Overview ===== ");
 		}

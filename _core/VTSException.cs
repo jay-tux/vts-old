@@ -30,8 +30,14 @@ namespace Jay.VTS
 			StackFrame curr = Stack;
 			while(curr != null)
 			{
-				frames.Add($"\t{(string)curr}: {(int)curr}");
-				curr = curr.Parent;
+				if(curr == null) {}
+				else { frames.Add($"{(string)curr}: {(int)curr}"); }
+				if(curr != null && curr.Parent != null) {
+					curr = curr.Parent;
+				}
+				else {
+					break;
+				}
 			}
 			return string.Join(", ", frames);
 		}
@@ -41,4 +47,5 @@ namespace Jay.VTS
  *	INTERNAL ERROR TYPES
  * -> IOLoadError -> can't load source file (not found, no perms)
  * -> SyntaxError -> syntax error (in preproc) (newline in constant, ...)
+ * -> NameError -> operator has wrong name
  */

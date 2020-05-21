@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Jay.VTS;
 using Jay.VTS.Parser;
+using System.Linq;
 
 namespace Jay.VTS.Structures
 {
@@ -21,7 +22,8 @@ namespace Jay.VTS.Structures
             };
         }
 
-        public bool Contains(string structure) => Fields.ContainsKey(structure) || Actions.ContainsKey(structure);
+        public bool Contains(string structure) => Fields.ContainsKey(structure) || Actions.ContainsKey(structure) 
+            || Operators.Keys.ToList().Select(x => x.ActionName).Contains(structure);
 
         public void PrintActions() => Console.WriteLine("  [" + Actions.Count + "] Actions in <" + Name + ">: "
             + string.Join(", ", Actions.Values));

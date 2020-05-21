@@ -23,7 +23,8 @@ namespace Jay.VTS.Parser
             string res = "";
             res += "[" + Lineno.ToString().PadLeft(4) + "]\t";
             for(int i = 0; i < depth; i++) { res += "  "; }
-            res += Line + " <--> " + (Split != null ? Split.ToOneliner() : "[ null ]");
+            res += Line + " <--> { " + Type + " } " +
+                (Split != null ? Split.ToOneliner() : "[ null ]");
             lines.Add(res);
             if(Contents != null) {
                 Contents.ForEach(line => lines.Add(line.ToString(depth + 1)));

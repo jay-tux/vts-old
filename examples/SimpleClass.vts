@@ -1,0 +1,28 @@
+class SimpleClass
+{
+    field Value;
+    action new () {}
+    
+    action setValue (newValue) { this.Value = newValue; }
+    
+    action printValue () { stdout("Value in SimpleClass: " + this.Value); }
+    
+    action _add (other)
+    {
+        res = SimpleClass.new();
+        res.setValue(Value + other.Value);
+        return res;
+    }
+}
+
+entry () {
+    sc = SimpleClass.new();
+    sc.setValue("Test");
+    sc.printValue();
+    
+    scc = SimpleClass.new();
+    scc.setValue(" with operator");
+    scc.printValue();
+    
+    (sc + scc).printValue();
+}

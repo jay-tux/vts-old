@@ -12,6 +12,7 @@ namespace Jay.VTS.Enums
         Control,
         Return,
         Member,
+        Field,
 
         Identifier = 0x20,
         Literal,

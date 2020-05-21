@@ -135,7 +135,12 @@ namespace Jay.VTS.Parser
                                 "Unexpected '}' in <" + File + "> on line <" + lineno + ">"); }
                                 if(depth == 0) {
                                     if(method != null) {
-                                        containing.Actions[method.Split.Inner[1].Content] = (VTSAction)method;
+                                        if(VTSOperator.IsOperator(method.Split.Inner[1].Content)) {
+                                            containing.Operators[(VTSOperator)method.Split.Inner[1].Content] = (VTSAction)method;
+                                        }
+                                        else {
+                                            containing.Actions[method.Split.Inner[1].Content] = (VTSAction)method;
+                                        }
                                         method = null;
                                     }
                                     else if(containing != null) {
@@ -160,6 +165,31 @@ namespace Jay.VTS.Parser
                                 Type = "code"
                             });
                             vl.Split = new LineSplitter(vl, (File, lineno)).SplitTarget();
+                            if(vl.Split.Inner != null && vl.Split.Inner[0].Type == ElementType.Field) {
+                                if(containing != null) {
+                                    if(method == null) {
+                                        if(!containing.Contains(vl.Split.Inner[1].Content)) {
+                                            containing.Fields[vl.Split.Inner[1].Content] = "_void";
+                                        }
+                                        else {
+                                            throw new VTSException("SyntaxError", "firstPass::code",
+                                                "In <" + this.File + ">, on line <" + lineno + ">: Action or Field <" +
+                                                vl.Split.Inner[1].Content + "> is already defined in class <" +
+                                                containing.Name + ">.");
+                                        }
+                                    }
+                                    else {
+                                        throw new VTSException("SyntaxError", "firstPass::code",
+                                            "In <" + this.File + ">, on line <" + lineno + 
+                                            ">: Field within action is not allowed.");
+                                    }
+                                }
+                                else {
+                                    throw new VTSException("SyntaxError", "firstPass::code",
+                                        "In <" + this.File + ">, on line <" + lineno + 
+                                        ">: Field outside of class is not allowed.");
+                                }
+                            }
                             current.Contents.Add(vl);
                             currLine = "";
                         break;

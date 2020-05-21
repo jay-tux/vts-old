@@ -49,7 +49,9 @@ namespace Jay.VTS.Execution
             if(handler != null) handler(this, e);
         }
 
-        public static explicit operator string(StackFrame val) => val.Root.File;
-        public static explicit operator int(StackFrame val) => val.Pointer.Lineno;
+        public static explicit operator string(StackFrame val) => 
+            val.Root == null ? "<root-of-code>" : val.Root.File;
+        public static explicit operator int(StackFrame val) => 
+            val.Pointer == null ? 0 : val.Pointer.Lineno;
     }
 }

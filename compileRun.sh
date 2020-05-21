@@ -2,14 +2,18 @@
 
 compile='false'
 run='false'
+debug='false'
 
-while getopts 'crh' opt; do
+while getopts 'cdrh' opt; do
 	case $opt in
 		'c')
 			compile='true'
 			;;
 		'r')
 			run='true'
+			;;
+		'd')
+			debug='true'
 			;;
 		'h')
 			#echo " **** MONO COMPILER FOR DND.NET ****"
@@ -32,6 +36,11 @@ while getopts 'crh' opt; do
 done
 
 if [[ $compile == 'true' ]]; then
+	if [[ $debug == 'true' ]]; then
+		echo 'Debug enabled: compiling debug version to bin/vts-debug.exe'
+		mcs -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-debug.exe -main:Jay.VTS.Program -debug *.cs */*.cs
+	fi
+	echo 'Compile enable: compiling release version to bin/vts-parse.exe'
 	mcs -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-parse.exe -main:Jay.VTS.Program *.cs */*.cs
 	if [[ $? != 0 ]]; then
 		>&2 echo "Failed to compile." 

@@ -180,6 +180,7 @@ namespace Jay.VTS.Parser
             if(tmp == "class") return ElementType.Class;
             if(tmp == "action") return ElementType.Action;
             if(tmp == "return") return ElementType.Return;
+            if(tmp == "field") return ElementType.Field;
             if(Control.Contains(tmp)) return ElementType.Control;
             if(Operator.Contains(tmp)) return ElementType.Operator;
             if(int.TryParse(tmp, out int a) || float.TryParse(tmp, out float b) || 
