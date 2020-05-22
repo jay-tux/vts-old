@@ -5,7 +5,7 @@ class SimpleClass
     
     action setValue (newValue) { this.Value = newValue; }
     
-    action printValue () { stdout("Value in SimpleClass: " + this.Value); }
+    action printValue () { core.stdout("Value in SimpleClass: " + this.Value); }
     
     action _add (other)
     {

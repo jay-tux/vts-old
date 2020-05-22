@@ -2,7 +2,7 @@
 #load <fibonacci.vts>;
 
 entry () {
-    stdout(" --- Trying to calculate the faculty of the 6th Fibonacci number --- ");
-    stdout(faculty.new().calc(fibonacci.new().calc(6)));
-    stderr("No errors!");
+    core.stdout(" --- Trying to calculate the faculty of the 6th Fibonacci number --- ");
+    core.stdout(faculty.new().calc(fibonacci.new().calc(6)));
+    core.stderr("No errors!");
 }

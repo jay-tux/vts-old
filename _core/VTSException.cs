@@ -48,4 +48,5 @@ namespace Jay.VTS
  * -> IOLoadError -> can't load source file (not found, no perms)
  * -> SyntaxError -> syntax error (in preproc) (newline in constant, ...)
  * -> NameError -> operator has wrong name
+ * -> ArgumentError -> cf name
  */

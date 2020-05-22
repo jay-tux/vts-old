@@ -11,15 +11,19 @@ namespace Jay.VTS.Execution
         public CodeBlock Pointer;
         private int Index;
         public event EventHandler<FrameEventArgs> StackFrameReturns;
+        public Dictionary<string, VTSVariable> Variables;
 
         public StackFrame(CodeBlock Root) {
             this.Root = Root;
             FindEntry(this.Root);
+            this.Variables = new Dictionary<string, VTSVariable>();
         }
 
-        public StackFrame(CodeBlock Root, CodeBlock Entry) {
+        public StackFrame(CodeBlock Root, int EntryIndex) {
             this.Root = Root;
-            Pointer = Entry;
+            this.Index = EntryIndex;
+            Pointer = Root.Contents[EntryIndex];
+            this.Variables = new Dictionary<string, VTSVariable>();
         }
 
         private void FindEntry(CodeBlock Target) {
@@ -40,8 +44,8 @@ namespace Jay.VTS.Execution
         }
 
         public void Execute() {
-            Console.WriteLine("Currently at: " + (string)Pointer);
-            Interpreter.Instance.PrintAll();
+            //Console.WriteLine("Currently at: " + (string)Pointer);
+            //Interpreter.Instance.PrintAll();
         }
 
         protected virtual void OnStackFrameReturns(FrameEventArgs e) {
