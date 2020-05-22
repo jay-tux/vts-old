@@ -1,4 +1,4 @@
-namespace vts.Structures
+namespace Jay.VTS.Structures
 {
     public class VTSParameter
     {

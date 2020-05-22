@@ -1,4 +1,5 @@
 using System;
+using Jay.VTS.Structures;
 
 namespace Jay.VTS.Execution
 {
@@ -8,6 +9,7 @@ namespace Jay.VTS.Execution
         public Exits ExitCode;
         public VTSException Error;
         public string InternalError;
+        public VTSVariable ReturnValue;
 
         public FrameEventArgs() { }
 

@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using Jay.VTS.Parser;
+using Jay.VTS.Structures;
+using System.Collections.Generic;
 
 namespace Jay.VTS.Execution
 {
@@ -26,6 +28,8 @@ namespace Jay.VTS.Execution
             this.Variables = new Dictionary<string, VTSVariable>();
         }
 
+        public void AddHandler(EventHandler<FrameEventArgs> handler) => StackFrameReturns += handler;
+
         private void FindEntry(CodeBlock Target) {
             if(Target.Contents != null) {
                 Target.Contents.ForEach(x => {
@@ -49,7 +53,7 @@ namespace Jay.VTS.Execution
         }
 
         protected virtual void OnStackFrameReturns(FrameEventArgs e) {
-            EventHandler<FrameEventArgs> handler= StackFrameReturns;
+            EventHandler<FrameEventArgs> handler = StackFrameReturns;
             if(handler != null) handler(this, e);
         }
 

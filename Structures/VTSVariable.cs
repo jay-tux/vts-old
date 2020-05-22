@@ -7,5 +7,16 @@ namespace Jay.VTS.Structures
         public VTSClass Class;
         public bool Mutable;
         public Dictionary<string, object> Fields;
+
+        public override string ToString() 
+        {
+            if(Class.Actions.ContainsKey("toString")) {
+                return "";
+                //return Class.Actions["toString"]
+            }
+            else {
+                return "~>" + Class.Name;
+            }
+        }
     }
 }

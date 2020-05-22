@@ -12,7 +12,7 @@ namespace Jay.VTS.Structures
                 //
             }, Operators = new Dictionary<VTSOperator, VTSAction>(),
             Internals = new Dictionary<string, Func<List<VTSParameter>, StackFrame, VTSVariable>>() {
-                "stdout" = (args, frame) => {
+                ["stdout"] = ((args, frame) => {
                     if(args.Count != 1) {
                         throw new VTSException("ArgumentError", frame, "core.stdout requires exactly one argument, " 
                             + args.Count + " given.", null);
@@ -21,8 +21,8 @@ namespace Jay.VTS.Structures
                         Console.Write(args[0]);
                         return Void;
                     }
-                },
-                "stderr" = (args, frame) => {
+                }),
+                ["stderr"] = ((args, frame) => {
                     if(args.Count != 1) {
                         throw new VTSException("ArgumentError", frame, "core.stderr requires exactly one argument, " 
                             + args.Count + " given.", null);
@@ -31,14 +31,14 @@ namespace Jay.VTS.Structures
                         Console.Error.Write(args[0]);
                         return Void;
                     }
-                }
+                })
             }
         };
 
         public static VTSClass VoidClass = new VTSClass() {
             Name = "Void", Actions = new Dictionary<string, VTSAction>(),
             Fields = new Dictionary<string, string>(), Operators = new Dictionary<VTSOperator, VTSAction>(),
-            Internals = new Dictionary<string, Func<List<VTSParameter>, VTSVariable>>()
+            Internals = new Dictionary<string, Func<List<VTSParameter>, StackFrame, VTSVariable>>()
         };
 
         public static VTSVariable Void = new VTSVariable() {
@@ -46,7 +46,7 @@ namespace Jay.VTS.Structures
         };
 
         public static VTSVariable Core = new VTSVariable() {
-            Class = Core, Mutable = false, Fields = new Dictionary<string, object>()
+            Class = CoreClass, Mutable = false, Fields = new Dictionary<string, object>()
         };
     }
 }
