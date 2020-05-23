@@ -3,8 +3,9 @@
 compile='false'
 run='false'
 debug='false'
+verbose='false'
 
-while getopts 'cdrh' opt; do
+while getopts 'cdvrh' opt; do
 	case $opt in
 		'c')
 			compile='true'
@@ -14,6 +15,9 @@ while getopts 'cdrh' opt; do
 			;;
 		'd')
 			debug='true'
+			;;
+		'v')
+			verbose='true'
 			;;
 		'h')
 			#echo " **** MONO COMPILER FOR DND.NET ****"
@@ -36,9 +40,12 @@ while getopts 'cdrh' opt; do
 done
 
 if [[ $compile == 'true' ]]; then
+	if [[ $verbose == 'true' ]]; then
+		echo 'Verbose enabled: compiling verbose logging version to bin/vts-verbose.exe'
+		mcs -define:VERBOSE -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-debug.exe -main:Jay.VTS.Program *.cs */*.cs
 	if [[ $debug == 'true' ]]; then
 		echo 'Debug enabled: compiling debug version to bin/vts-debug.exe'
-		mcs -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-debug.exe -main:Jay.VTS.Program -debug *.cs */*.cs
+		mcs -define:VERBOSE -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-debug.exe -main:Jay.VTS.Program -debug *.cs */*.cs
 	fi
 	echo 'Compile enabled: compiling release version to bin/vts-parse.exe'
 	mcs -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-parse.exe -main:Jay.VTS.Program *.cs */*.cs

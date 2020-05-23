@@ -25,6 +25,7 @@ namespace Jay.VTS.Structures
             Parent = parent;
             StackFrame execution = new StackFrame(Instructions, 0) { Parent = parent };
             execution.Variables["this"] = caller;
+            execution.ParentClass = caller.Class;
             execution.StackFrameReturns += (thrw, args) => OnActionReturns(args);
             execution.Execute();
         }

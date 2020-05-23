@@ -15,6 +15,7 @@ namespace Jay.VTS.Execution
         private int Index;
         public event EventHandler<FrameEventArgs> StackFrameReturns;
         public Dictionary<string, VTSVariable> Variables;
+        public VTSClass ParentClass;
 
         public StackFrame(CodeBlock Root) {
             this.Root = Root;
@@ -38,7 +39,10 @@ namespace Jay.VTS.Execution
                         FindEntry(x);
                     }
                     else if(x.Type == "entry") {
-                        Pointer = x;
+                        if(x.Contents == null || x.Contents.Count == 0) { 
+                            OnStackFrameReturns(new FrameEventArgs().SetExitCode(FrameEventArgs.Exits.Return));
+                        }
+                        Pointer = x.Contents[0];
                     }
                 });
             }
@@ -52,6 +56,7 @@ namespace Jay.VTS.Execution
             //Console.WriteLine("Currently at: " + (string)Pointer);
             Interpreter.Instance.PrintAll();
             PrintScope();
+            BlockParse.ParseSingleBlock(this, Pointer);
         }
 
         public void PrintScope() {

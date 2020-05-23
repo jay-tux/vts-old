@@ -20,7 +20,7 @@ namespace Jay.VTS
 		public CodeBlock Pass;
 		public CodeBlock Root;
 		public string Filename { get; }
-		public List<VTSClass> Classes;
+		public List<VTSClass> Classes = new List<VTSClass>() { CoreStructures.CoreClass, CoreStructures.VoidClass };
 		public static Interpreter Instance;
 
 		public static void Create(string file) {
@@ -82,11 +82,6 @@ namespace Jay.VTS
 				cls.Fields.Keys.ForEach(fld => Console.WriteLine("   -> Field::" + fld));
 				cls.Actions.Values.ForEach(act => Console.WriteLine("   -> Action::" + act));
 				cls.Operators.AsEnumerable().ForEach(x => Console.WriteLine("   -> Operator<" + x.Key + ">::" + x.Value));
-			});
-			CoreStructures.BuiltinClasses.ForEach(cls => {
-				Console.WriteLine(" -> " + cls + " [" + cls.Internals.Count + " actions]");
-				cls.Fields.Keys.ForEach(fld => Console.WriteLine("   -> Field::" + fld));
-				cls.Internals.ForEach(act => Console.WriteLine("   -> Action::" + act.Key));
 			});
 			Console.WriteLine(" ===== End of Overview ===== ");
 		}

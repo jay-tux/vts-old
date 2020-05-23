@@ -12,6 +12,8 @@ namespace Jay.VTS.Parser
         public List<LineElement> Inner;
         public LineElement Parent;
 
+        public LineElement this[int index] => Inner[index];
+
         public string ToOneliner() {
             if(Type == ElementType.Block) {
                 string res = "[ ";

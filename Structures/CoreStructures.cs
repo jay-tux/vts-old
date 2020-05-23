@@ -19,7 +19,7 @@ namespace Jay.VTS.Structures
                             + args.Count + " given.", null);
                     }
                     else {
-                        Console.Write(args[0]);
+                        Console.Write(args[0].Value);
                         return Void;
                     }
                 }),
@@ -29,7 +29,7 @@ namespace Jay.VTS.Structures
                             + args.Count + " given.", null);
                     }
                     else {
-                        Console.Error.Write(args[0]);
+                        Console.Error.Write(args[0].Value);
                         return Void;
                     }
                 })
