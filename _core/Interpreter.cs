@@ -74,6 +74,7 @@ namespace Jay.VTS
 		public bool ContainsClass(string ClassName) => this.Classes.Select(x => x.Name).Contains(ClassName);
 		public void PrintClasses() => Console.WriteLine(Classes.Count + " Classes in memory: " + string.Join(", ", Classes));
 		public void AddClass(VTSClass ClassCode) => this.Classes.Add(ClassCode);
+		
 		public void PrintAll() {
 			Console.WriteLine(" ===== Current Memory Structures: =====");
 			Classes.ForEach(cls => {
@@ -81,6 +82,11 @@ namespace Jay.VTS
 				cls.Fields.Keys.ForEach(fld => Console.WriteLine("   -> Field::" + fld));
 				cls.Actions.Values.ForEach(act => Console.WriteLine("   -> Action::" + act));
 				cls.Operators.AsEnumerable().ForEach(x => Console.WriteLine("   -> Operator<" + x.Key + ">::" + x.Value));
+			});
+			CoreStructures.BuiltinClasses.ForEach(cls => {
+				Console.WriteLine(" -> " + cls + " [" + cls.Internals.Count + " actions]");
+				cls.Fields.Keys.ForEach(fld => Console.WriteLine("   -> Field::" + fld));
+				cls.Internals.ForEach(act => Console.WriteLine("   -> Action::" + act.Key));
 			});
 			Console.WriteLine(" ===== End of Overview ===== ");
 		}

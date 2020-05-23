@@ -6,6 +6,7 @@ namespace Jay.VTS.Structures
 {
     public static class CoreStructures
     {
+        #region builtin classes
         public static VTSClass CoreClass = new VTSClass() {
             Name = "Core", Actions = new Dictionary<string, VTSAction>(),
             Fields = new Dictionary<string, string>(){
@@ -40,7 +41,9 @@ namespace Jay.VTS.Structures
             Fields = new Dictionary<string, string>(), Operators = new Dictionary<VTSOperator, VTSAction>(),
             Internals = new Dictionary<string, Func<List<VTSParameter>, StackFrame, VTSVariable>>()
         };
+        #endregion
 
+        #region builtin constants
         public static VTSVariable Void = new VTSVariable() {
             Class = VoidClass, Mutable = false, Fields = new Dictionary<string, object>()
         };
@@ -48,5 +51,12 @@ namespace Jay.VTS.Structures
         public static VTSVariable Core = new VTSVariable() {
             Class = CoreClass, Mutable = false, Fields = new Dictionary<string, object>()
         };
+        #endregion
+
+        public static Dictionary<string, VTSVariable> BuiltinVariables = new Dictionary<string, VTSVariable>() {
+            ["void"] = Void, ["core"] = Core
+        };
+
+        public static List<VTSClass> BuiltinClasses = new List<VTSClass>() { CoreClass, VoidClass };
     }
 }

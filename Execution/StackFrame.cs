@@ -1,4 +1,5 @@
 using System;
+using Jay.Xtend;
 using System.Linq;
 using Jay.VTS.Parser;
 using Jay.VTS.Structures;
@@ -49,7 +50,15 @@ namespace Jay.VTS.Execution
 
         public void Execute() {
             //Console.WriteLine("Currently at: " + (string)Pointer);
-            //Interpreter.Instance.PrintAll();
+            Interpreter.Instance.PrintAll();
+            PrintScope();
+        }
+
+        public void PrintScope() {
+            Console.WriteLine(" === Current Scope Variables === ");
+            Variables.ForEach(x => Console.WriteLine(" -> " + x.Key + ": " + x.Value.Class.Name));
+            CoreStructures.BuiltinVariables.ForEach(x => Console.WriteLine(" -> " + x.Key + ": " + x.Value.Class.Name));
+            Console.WriteLine(" === End of Overview === ");
         }
 
         protected virtual void OnStackFrameReturns(FrameEventArgs e) {

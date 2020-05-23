@@ -21,6 +21,14 @@ namespace Jay.VTS.Structures
             execution.Execute();
         }
 
+        public void Execute(StackFrame parent, VTSVariable caller) {
+            Parent = parent;
+            StackFrame execution = new StackFrame(Instructions, 0) { Parent = parent };
+            execution.Variables["this"] = caller;
+            execution.StackFrameReturns += (thrw, args) => OnActionReturns(args);
+            execution.Execute();
+        }
+
         protected virtual void OnActionReturns(FrameEventArgs e) {
             Result = e.ReturnValue;
             EventHandler<FrameEventArgs> handler = ActionReturns;
