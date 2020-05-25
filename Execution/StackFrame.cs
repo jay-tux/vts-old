@@ -61,10 +61,10 @@ namespace Jay.VTS.Execution
         }
 
         public void PrintScope() {
-            Logging.Log(" === Current Scope Variables === ");
-            Variables.ForEach(x => Logging.Log(" -> " + x.Key + ": " + x.Value.Class.Name));
-            CoreStructures.BuiltinVariables.ForEach(x => Logging.Log(" -> " + x.Key + ": " + x.Value.Class.Name));
-            Logging.Log(" === End of Overview === ");
+            Logger.Log(" === Current Scope Variables === ");
+            Variables.ForEach(x => Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name));
+            CoreStructures.BuiltinVariables.ForEach(x => Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name));
+            Logger.Log(" === End of Overview === ");
         }
 
         protected virtual void OnStackFrameReturns(FrameEventArgs e) {

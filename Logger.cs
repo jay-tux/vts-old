@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Jay.Logging
 {
-    public class Logging
+    public class Logger
     {
         private static string File = "~/debug.log";
 

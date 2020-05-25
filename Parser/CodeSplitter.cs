@@ -73,7 +73,7 @@ namespace Jay.VTS.Parser
                             };
                             inner.Split = new LineSplitter(inner, (File, lineno)).SplitTarget();
                             if(inner.Split.Inner[0].Type == ElementType.Class) {
-                                Logging.Log("Found class " + inner.Split.Inner[1].Content);
+                                Logger.Log("Found class " + inner.Split.Inner[1].Content);
                                 if(containing != null) {
                                     throw new VTSException("SyntaxError", "firstPass::code",
                                         "In <" + this.File + ">, on line <" + lineno + 
@@ -96,7 +96,7 @@ namespace Jay.VTS.Parser
                                 }
                             }
                             else if(inner.Split.Inner[0].Type == ElementType.Action) {
-                                Logging.Log("Found action " + inner.Split.Inner[1].Content + " in " + containing);
+                                Logger.Log("Found action " + inner.Split.Inner[1].Content + " in " + containing);
                                 if(containing == null){
                                     throw new VTSException("SyntaxError", "firstPass::code",
                                         "Code-structure <action> " + inner.Split.Inner[1].Content + 

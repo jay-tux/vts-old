@@ -1,6 +1,7 @@
 using Jay.VTS.Structures;
 using Jay.VTS.Execution;
 using Jay.VTS.Parser;
+using Jay.VTS.Enums;
 using Jay.Logging;
 using System;
 
@@ -9,8 +10,8 @@ namespace Jay.VTS.Execution
     public class BlockParse
     {
         public static void ParseSingleBlock(StackFrame frame, CodeBlock block) {
-            Logging.Log("Parsing block: ");
-            Logging.Log(block.ToString(1));
+            Logger.Log("Parsing block: ");
+            Logger.Log(block.ToString(1));
 
             if(block.Split.Inner.Count == 0) { return; }
 
@@ -47,7 +48,7 @@ namespace Jay.VTS.Execution
                         //(re-)assign variable
                         if(frame.ParentClass != null && frame.ParentClass.Fields.ContainsKey(varname)) {
                             //(re-)assign in class (this field in frame's vars)
-                            frame.Variables["this"].Fields = result;
+                            frame.Variables["this"].Fields[varname] = result;
                         }
                         else {
                             //(re-)assign in frame

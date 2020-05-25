@@ -77,14 +77,14 @@ namespace Jay.VTS
 		public void AddClass(VTSClass ClassCode) => this.Classes.Add(ClassCode);
 		
 		public void PrintAll() {
-			Logging.Log(" ===== Current Memory Structures: =====");
+			Logger.Log(" ===== Current Memory Structures: =====");
 			Classes.ForEach(cls => {
-				Logging.Log(" -> " + cls + " [" + cls.Actions.Keys.Count +" actions]");
-				cls.Fields.Keys.ForEach(fld => Logging.Log("   -> Field::" + fld));
-				cls.Actions.Values.ForEach(act => Logging.Log("   -> Action::" + act));
-				cls.Operators.AsEnumerable().ForEach(x => Logging.Log("   -> Operator<" + x.Key + ">::" + x.Value));
+				Logger.Log(" -> " + cls + " [" + cls.Actions.Keys.Count +" actions]");
+				cls.Fields.Keys.ForEach(fld => Logger.Log("   -> Field::" + fld));
+				cls.Actions.Values.ForEach(act => Logger.Log("   -> Action::" + act));
+				cls.Operators.AsEnumerable().ForEach(x => Logger.Log("   -> Operator<" + x.Key + ">::" + x.Value));
 			});
-			Logging.Log(" ===== End of Overview ===== ");
+			Logger.Log(" ===== End of Overview ===== ");
 		}
 
 		public Interpreter LoadImports() {
