@@ -1,6 +1,7 @@
 using Jay.VTS.Structures;
 using Jay.VTS.Execution;
 using Jay.VTS.Parser;
+using Jay.Logging;
 using System;
 
 namespace Jay.VTS.Execution
@@ -8,8 +9,8 @@ namespace Jay.VTS.Execution
     public class BlockParse
     {
         public static void ParseSingleBlock(StackFrame frame, CodeBlock block) {
-            Console.WriteLine("Parsing block: ");
-            Console.WriteLine(block.ToString(1));
+            Logging.Log("Parsing block: ");
+            Logging.Log(block.ToString(1));
 
             if(block.Split.Inner.Count == 0) { return; }
 

@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Jay.VTS;
 using Jay.VTS.Enums;
 using Jay.VTS.Structures;
+using Jay.Logging;
 
 namespace Jay.VTS.Parser
 {
@@ -72,7 +73,7 @@ namespace Jay.VTS.Parser
                             };
                             inner.Split = new LineSplitter(inner, (File, lineno)).SplitTarget();
                             if(inner.Split.Inner[0].Type == ElementType.Class) {
-                                Console.WriteLine("Found class " + inner.Split.Inner[1].Content);
+                                Logging.Log("Found class " + inner.Split.Inner[1].Content);
                                 if(containing != null) {
                                     throw new VTSException("SyntaxError", "firstPass::code",
                                         "In <" + this.File + ">, on line <" + lineno + 
@@ -95,7 +96,7 @@ namespace Jay.VTS.Parser
                                 }
                             }
                             else if(inner.Split.Inner[0].Type == ElementType.Action) {
-                                Console.WriteLine("Found action " + inner.Split.Inner[1].Content + " in " + containing);
+                                Logging.Log("Found action " + inner.Split.Inner[1].Content + " in " + containing);
                                 if(containing == null){
                                     throw new VTSException("SyntaxError", "firstPass::code",
                                         "Code-structure <action> " + inner.Split.Inner[1].Content + 

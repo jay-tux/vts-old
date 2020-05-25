@@ -8,6 +8,7 @@ using Jay.VTS.Enums;
 using Jay.VTS.Parser;
 using Jay.VTS.Structures;
 using Jay.VTS.Execution;
+using Jay.Logging;
 
 namespace Jay.VTS
 {
@@ -76,14 +77,14 @@ namespace Jay.VTS
 		public void AddClass(VTSClass ClassCode) => this.Classes.Add(ClassCode);
 		
 		public void PrintAll() {
-			Console.WriteLine(" ===== Current Memory Structures: =====");
+			Logging.Log(" ===== Current Memory Structures: =====");
 			Classes.ForEach(cls => {
-				Console.WriteLine(" -> " + cls + " [" + cls.Actions.Keys.Count +" actions]");
-				cls.Fields.Keys.ForEach(fld => Console.WriteLine("   -> Field::" + fld));
-				cls.Actions.Values.ForEach(act => Console.WriteLine("   -> Action::" + act));
-				cls.Operators.AsEnumerable().ForEach(x => Console.WriteLine("   -> Operator<" + x.Key + ">::" + x.Value));
+				Logging.Log(" -> " + cls + " [" + cls.Actions.Keys.Count +" actions]");
+				cls.Fields.Keys.ForEach(fld => Logging.Log("   -> Field::" + fld));
+				cls.Actions.Values.ForEach(act => Logging.Log("   -> Action::" + act));
+				cls.Operators.AsEnumerable().ForEach(x => Logging.Log("   -> Operator<" + x.Key + ">::" + x.Value));
 			});
-			Console.WriteLine(" ===== End of Overview ===== ");
+			Logging.Log(" ===== End of Overview ===== ");
 		}
 
 		public Interpreter LoadImports() {

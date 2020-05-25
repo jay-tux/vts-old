@@ -2,6 +2,7 @@ using System;
 using Jay.Xtend;
 using System.Linq;
 using Jay.VTS.Parser;
+using Jay.Logging;
 using Jay.VTS.Structures;
 using System.Collections.Generic;
 
@@ -60,10 +61,10 @@ namespace Jay.VTS.Execution
         }
 
         public void PrintScope() {
-            Console.WriteLine(" === Current Scope Variables === ");
-            Variables.ForEach(x => Console.WriteLine(" -> " + x.Key + ": " + x.Value.Class.Name));
-            CoreStructures.BuiltinVariables.ForEach(x => Console.WriteLine(" -> " + x.Key + ": " + x.Value.Class.Name));
-            Console.WriteLine(" === End of Overview === ");
+            Logging.Log(" === Current Scope Variables === ");
+            Variables.ForEach(x => Logging.Log(" -> " + x.Key + ": " + x.Value.Class.Name));
+            CoreStructures.BuiltinVariables.ForEach(x => Logging.Log(" -> " + x.Key + ": " + x.Value.Class.Name));
+            Logging.Log(" === End of Overview === ");
         }
 
         protected virtual void OnStackFrameReturns(FrameEventArgs e) {
