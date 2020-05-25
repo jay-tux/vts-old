@@ -42,7 +42,7 @@ done
 if [[ $compile == 'true' ]]; then
 	if [[ $verbose == 'true' ]]; then
 		echo 'Verbose enabled: compiling verbose logging version to bin/vts-verbose.exe'
-		mcs -define:VERBOSE -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-debug.exe -main:Jay.VTS.Program *.cs */*.cs
+		mcs -define:VERBOSE -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-verbose.exe -main:Jay.VTS.Program *.cs */*.cs
 	fi
 	if [[ $debug == 'true' ]]; then
 		echo 'Debug enabled: compiling debug version to bin/vts-debug.exe'
