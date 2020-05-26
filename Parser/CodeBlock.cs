@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Jay.VTS;
+using System.Linq;
+using Jay.Xtend;
 
 namespace Jay.VTS.Parser
 {
@@ -31,5 +33,7 @@ namespace Jay.VTS.Parser
             }
             return String.Join("\n", lines) + (depth == 0 ? "\n --- End of Code Block --- " : "");
         }
+
+        public List<LineElement> Slice(int index) => Split.Inner.Slice(index).ToList();
     }
 }

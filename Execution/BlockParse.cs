@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using Jay.VTS.Structures;
 using Jay.VTS.Execution;
 using Jay.VTS.Parser;
 using Jay.VTS.Enums;
+using Jay.Xtend;
 using Jay.Logging;
 using System;
 
@@ -31,19 +33,19 @@ namespace Jay.VTS.Execution
                         //check if variable exists with name in frame -> re-assign
                         //check if field exists with name in class -> re-assign
                         //else -> assign in frame
-                    string varname = block.Split[2].Content;
+                    string varname = block.Split[0].Content;
                     if(Interpreter.Instance.ContainsClass(varname)) {
-                        throw new VTSException("NameError", frame, "Identifier is already defined as class.", null);
+                        throw new VTSException("NameError", frame, $"Identifier <{varname}> is already defined as class.", null);
                     }
                     else if(frame.ParentClass != null && frame.ParentClass.Actions.ContainsKey(varname)) {
-                        throw new VTSException("NameError", frame, "Identifier is already defined as class-action.", null);
+                        throw new VTSException("NameError", frame, $"Identifier <{varname}> is already defined as class-action.", null);
                     }
                     else if(CoreStructures.BuiltinVariables.ContainsKey(varname)) {
-                        throw new VTSException("NameError", frame, "Identifier is already defined as global constant.", null);
+                        throw new VTSException("NameError", frame, $"Identifier <{varname}> is already defined as global constant.", null);
                     }
                     else {
                         //evaluate result
-                        VTSVariable result = new VTSVariable();
+                        VTSVariable result = ParseExpression(frame, block, 2);
 
                         //(re-)assign variable
                         if(frame.ParentClass != null && frame.ParentClass.Fields.ContainsKey(varname)) {
@@ -57,6 +59,43 @@ namespace Jay.VTS.Execution
                     }
                 }
             }
+        }
+
+        public static VTSVariable ParseExpression(StackFrame frame, CodeBlock block, int index) {
+            Logger.Log("Trying to parse expression <" + block.Split[index].ToString(0) + ">");
+            LineElement expr = new LineElement() {
+                Type = ElementType.Block,
+                Content = "",
+                Inner = (List<LineElement>)block.Slice(index),
+                Parent = null
+            };
+            if(expr.Inner.Count == 1) {
+                switch(expr[0].Type) {
+                    case ElementType.Identifier:
+                        Logger.Log("Expression is Identifier");
+                        if(frame.Variables.ContainsKey(expr[0].Content)) {
+                            return frame.Variables[expr[0].Content];
+                        }
+                        else if(CoreStructures.BuiltinVariables.ContainsKey(expr[0].Content)) {
+                            return CoreStructures.BuiltinVariables[expr[0].Content];
+                        }
+                        else {
+                            throw new VTSException("NameError", frame, $"Identifier <{expr[0].Content}> unknown.", null);
+                        }
+
+                    case ElementType.Literal:
+                        Logger.Log("Expression is Literal");
+                        return Literal.Parse(expr[0].Content);
+
+                    default:
+                        Logger.Log("Expression is one-element type.");
+                        break;
+                }
+            }
+            else {
+                Logger.Log("Expression is " + expr.Inner.Count + "-element type.");
+            }
+            return new VTSVariable();
         }
     }
 }
