@@ -11,7 +11,9 @@ namespace Jay.Logging
 {
     public class Logger
     {
+        #if FILELOG
         private static string File = "~/debug.log";
+        #endif
 
         public static void Log(string message){
             #if VERBOSE
