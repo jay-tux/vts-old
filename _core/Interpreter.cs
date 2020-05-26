@@ -105,7 +105,9 @@ namespace Jay.VTS
 			return this;
 		}
 		public Interpreter SecondPass() {
-			Root.Contents.ForEach(fil => Console.WriteLine((string)fil + "\n"));
+			Root.Contents.ForEach(fil => Logger.Log((string)fil + "\n"));
+			Logger.Log("");
+			Root.Contents.ForEach(fil => Logger.Log(fil.ToParentString(0) + "\n"));
 			//Console.WriteLine(" ------ ");
 			StackFrame rootFrame = new StackFrame(Root);
 			rootFrame.StackFrameReturns += (src, args) => {

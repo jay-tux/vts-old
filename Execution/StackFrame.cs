@@ -44,6 +44,7 @@ namespace Jay.VTS.Execution
                             OnStackFrameReturns(new FrameEventArgs().SetExitCode(FrameEventArgs.Exits.Return));
                         }
                         Pointer = x.Contents[0];
+                        Index = 0;
                     }
                 });
             }
@@ -58,6 +59,7 @@ namespace Jay.VTS.Execution
             Interpreter.Instance.PrintAll();
             PrintScope();
             BlockParse.ParseSingleBlock(this, Pointer);
+            PrintScope();
         }
 
         public void PrintScope() {

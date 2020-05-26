@@ -37,6 +37,7 @@ namespace Jay.VTS.Parser
                 Line = null
             };
             CodeBlock current = data;
+            CodeBlock currParent = data;
             int lineno = 1;
             bool inString = false;
             string currLine = "";
@@ -128,6 +129,8 @@ namespace Jay.VTS.Parser
                             if(inner.Type.Length < 4) { inner.Type += "  "; }
                             current.Contents.Add(inner);
                             current = inner;
+                            current.Parent = currParent;
+                            currParent = current;
                             currLine = "";
                         break;
 
@@ -153,6 +156,7 @@ namespace Jay.VTS.Parser
                                     depth--;
                                 }
                             current = current.Parent;
+                            currParent = current;
                             currLine = "";
                         break;
 
@@ -163,7 +167,8 @@ namespace Jay.VTS.Parser
                                 Line = Regex.Replace(currLine.TrimStart(), @"\s+", " "),
                                 Contents = null,
                                 Lineno = lineno,
-                                Type = "code"
+                                Type = "code",
+                                Parent = currParent
                             });
                             vl.Split = new LineSplitter(vl, (File, lineno)).SplitTarget();
                             if(vl.Split.Inner != null && vl.Split.Inner[0].Type == ElementType.Field) {
