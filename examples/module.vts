@@ -2,7 +2,8 @@
 #load <fibonacci.vts>;
 
 entry () {
-    tmp = void;
+    9 * 7 - 5 * (3 + 6);
+    //tmp = void;
     core.stdout(" --- Trying to calculate the faculty of the 6th Fibonacci number --- ");
     core.stdout(faculty.new().calc(fibonacci.new().calc(6)));
     core.stderr("No errors!");

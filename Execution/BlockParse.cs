@@ -14,8 +14,9 @@ namespace Jay.VTS.Execution
         public static void ParseSingleBlock(StackFrame frame, CodeBlock block) {
             Logger.Log("Parsing block: ");
             Logger.Log(block.ToString(1));
+            Expression parse = SplitExpression.Split(block.Split);
 
-            if(block.Split.Inner.Count == 0) { return; }
+            /*if(block.Split.Inner.Count == 0) { return; }
 
             if(block.Split[0].Type == ElementType.Identifier) {
                 if(block.Split.Inner.Count == 1) {
@@ -58,11 +59,18 @@ namespace Jay.VTS.Execution
                         }
                     }
                 }
-            }
+            }*/
         }
 
         public static VTSVariable ParseExpression(StackFrame frame, CodeBlock block, int index) {
-            Logger.Log("Trying to parse expression <" + block.Split[index].ToString(0) + ">");
+            Expression split = SplitExpression.Split(new LineElement() {
+                Type = ElementType.Block,
+                Content = "",
+                Inner = (List<LineElement>)block.Slice(index),
+                Parent = null
+            });
+            return CoreStructures.Void;
+            /*Logger.Log("Trying to parse expression <" + block.Split[index].ToString(0) + ">");
             LineElement expr = new LineElement() {
                 Type = ElementType.Block,
                 Content = "",
@@ -95,7 +103,7 @@ namespace Jay.VTS.Execution
             else {
                 Logger.Log("Expression is " + expr.Inner.Count + "-element type.");
             }
-            return new VTSVariable();
+            return new VTSVariable();*/
         }
     }
 }
