@@ -1,10 +1,10 @@
 class fibonacci {
     action calc (base) {
-        control.if(op.or(op.equal(base, 1), op.equal(base == 2))) {
-            control.return(base);
+        if(base == 1) OR base == 2)) {
+            return 1;
         }
 
-        control.return(op.add(this.calc(op.sub(base - 1)), this.calc(op.sub(base, 2))));
+        return this.calc(base - 1) + this.calc(base - 2);
     }
     
     action new () {

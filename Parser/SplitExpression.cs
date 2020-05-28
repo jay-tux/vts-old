@@ -48,6 +48,9 @@ namespace Jay.VTS.Parser
                     pop = true;
                     //Is call, prepare for block
                 }
+                else if(current.Type == ElementType.Operator) {
+                    Logger.Log(OffString(offset) + "   -> Is operator???");
+                }
                 else if(current.Type == ElementType.Separator) {
                     Logger.Log(OffString(offset) + "  -> Is separator");
                     //separator, skip
