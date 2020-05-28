@@ -2,10 +2,9 @@
 #load <fibonacci.vts>;
 
 entry () {
-    obj.call(arg1, arg2).call2().call3(class.new(), arg2, arg3);
-    obj.call(arg1, arg2).call2();
+    core.assign(tmp, void);
     //tmp = void;
-    //core.stdout(" --- Trying to calculate the faculty of the 6th Fibonacci number --- ");
+    core.stdout(" --- Trying to calculate the faculty of the 6th Fibonacci number --- ");
     core.stdout(faculty.new().calc(fibonacci.new().calc(6)));
     core.stderr("No errors!");
 }

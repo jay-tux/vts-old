@@ -11,6 +11,9 @@ namespace Jay.VTS.Parser
         public List<Expression> Block;
         public bool IsCall;
         public uint ArgCount;
+        public uint Count {
+            get => (uint)Block.Select(x => x.IsCall ? -ArgCount : 1).Sum();
+        }
 
         public override string ToString() => 
             IsBlock ? ("[ " + string.Join(", ", Block.Select(x => x.ToString())) + "] ") : 

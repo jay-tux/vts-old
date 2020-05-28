@@ -11,10 +11,10 @@ namespace Jay.VTS.Parser
         public CodeBlock Target;
         public (string, int) Location;
         public static List<string> Control = new List<string>(){
-            "if", "else", "elseif", "while", "do", "for", "foreach", "unless"
+            "if", "else", "elseif", "while", "for"
         };
         public static List<string> Operator = new List<string>(){
-            "=", "==", "+=", "*=", "-=", "/=", "%=", "*", "-", "+", "*", "/", "%", "!=", "~", 
+            "=", "==", /*"+=", "*=", "-=", "/=", "%=",*/ "*", "-", "+", "*", "/", "%", /*"!=", "~", */
             "AND", "OR", "NOT"
         };
         public static List<string> MultChar = new List<string>(){

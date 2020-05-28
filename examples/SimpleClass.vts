@@ -3,26 +3,26 @@ class SimpleClass
     field Value;
     action new () {}
     
-    action setValue (newValue) { this.Value = newValue; }
+    action setValue (newValue) { core.assign(this.Value, newValue); }
     
-    action printValue () { core.stdout("Value in SimpleClass: " + this.Value); }
+    action printValue () { core.stdout(op.add("Value in SimpleClass: ", this.Value)); }
     
     action _add (other)
     {
-        res = SimpleClass.new();
-        res.setValue(Value + other.Value);
-        return res;
+        core.assign(res, SimpleClass.new());
+        res.setValue(this.Value, other.Value);
+        control.return(res);
     }
 }
 
 entry () {
-    sc = SimpleClass.new();
+    core.assign(sc, SimpleClass.new());
     sc.setValue("Test");
     sc.printValue();
     
-    scc = SimpleClass.new();
+    core.assign(scc, SimpleClass.new());
     scc.setValue(" with operator");
     scc.printValue();
     
-    (sc + scc).printValue();
+    op.add(sc + scc).printValue();
 }

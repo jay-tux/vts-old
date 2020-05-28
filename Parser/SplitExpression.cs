@@ -31,7 +31,7 @@ namespace Jay.VTS.Parser
                     result.Block.AddRange(split.Block);
                     if(pop.CheckFlip()) { 
                         result.Block.Add(new Expression() { 
-                            IsCall = true, Content = holder.Pop().Content, ArgCount = (uint)split.Block.Count 
+                            IsCall = true, Content = holder.Pop().Content, ArgCount = (uint)split.Count 
                         }); 
                     }
                     //Add block as series of args

@@ -1,9 +1,9 @@
 class faculty {
     action calc (base) {
-        if (base == 1) {
-            return base;
+        control.if(op.equal(base, 1)) {
+            control.return(base);
         }
-        return base * calc(base - 1);
+        control.return(op.mult(base, this.calc(op.sub(base, 1))));
     }
 
     action new () {
