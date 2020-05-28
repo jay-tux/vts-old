@@ -71,9 +71,19 @@ namespace Jay.VTS.Parser
                                 Parent = pointer,
                                 Type = next == ElementType.None ? DetermineType(currStr) : next
                             });
+                            //if(tmp.Type == ElementType.Operator) { /*infix -> prefix*/ }
                             if(tmp.Type != ElementType.Void) { pointer.Inner.Add(tmp); }
                             currStr = "";
                             if(next != ElementType.None) { next = ElementType.None; }
+
+                            if(x == ',') { 
+                                pointer.Inner.Add(new LineElement(){
+                                    Content = ",",
+                                    Inner = null,
+                                    Parent = pointer,
+                                    Type = ElementType.Separator
+                                });
+                            }
                         }
                         else if(x == '.') {
                             LineElement tmp = (new LineElement(){

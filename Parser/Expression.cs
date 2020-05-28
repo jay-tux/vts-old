@@ -9,9 +9,12 @@ namespace Jay.VTS.Parser
         public string Content;
         public bool IsBlock;
         public List<Expression> Block;
+        public bool IsCall;
+        public uint ArgCount;
 
         public override string ToString() => 
-            IsBlock ? ("[ " + string.Join(", ", Block.Select(x => x.ToString())) + "] ") : ("{ " + Content + " }");
+            IsBlock ? ("[ " + string.Join(", ", Block.Select(x => x.ToString())) + "] ") : 
+            IsCall ? ("{ Call:" + Content + "; " + ArgCount + " args }" ) : ("{ " + Content + " }");
     }
 
     public class OperatorExpression : Expression

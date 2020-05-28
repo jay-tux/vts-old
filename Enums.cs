@@ -15,13 +15,14 @@ namespace Jay.VTS.Enums
         Control     = 1 << 6,
         Return      = 1 << 7,
         Member      = 1 << 8,
-        Field       = 1 << 9,  
+        Field       = 1 << 9,
+        Separator   = 1 << 10,
 
-        Identifier  = 1 << 10,
-        Literal     = 1 << 11,
+        Identifier  = 1 << 11,
+        Literal     = 1 << 12,
         
-        Operator    = 1 << 12,
+        Operator    = 1 << 13,
 
-        Comment     = 1 << 13
+        Comment     = 1 << 14
     }
 }
