@@ -25,5 +25,7 @@ namespace Jay.Logging
                 #endif
             #endif
         }
+
+        public static void Log(object message) => Log(message.ToString());
     }
 }
