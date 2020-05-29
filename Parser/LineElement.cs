@@ -1,6 +1,7 @@
 using System;
 using Jay.VTS;
 using Jay.VTS.Enums;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Jay.VTS.Parser
@@ -27,6 +28,8 @@ namespace Jay.VTS.Parser
                 return "{ " + Content + ": " + Type + " }";
             }
         }
+
+        public bool ContainsOperator() => (Type == ElementType.Block && Inner.Any(x => (x.Type == ElementType.Operator)));
 
         public string ToString(uint Offset) {
             if(Type == ElementType.Block) {

@@ -1,6 +1,6 @@
 class fibonacci {
     action calc (base) {
-        if(base == 1) OR base == 2)) {
+        if(base == 1 OR base == 2) {
             return 1;
         }
 

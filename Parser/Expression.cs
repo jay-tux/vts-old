@@ -1,4 +1,5 @@
 using System;
+using Jay.VTS.Enums;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -6,8 +7,8 @@ namespace Jay.VTS.Parser
 {
     public class Expression
     {
-        public string Content;
         public bool IsBlock;
+        public LineElement Content;
         public List<Expression> Block;
         public bool IsCall;
         public uint ArgCount;
@@ -16,8 +17,27 @@ namespace Jay.VTS.Parser
         }
 
         public override string ToString() => 
-            IsBlock ? ("[ " + string.Join(", ", Block.Select(x => x.ToString())) + "] ") : 
-            IsCall ? ("{ Call:" + Content + "; " + ArgCount + " args }" ) : ("{ " + Content + " }");
+            IsBlock ? ("[ " + string.Join(", ", Block.Select(x => x.ToString())) + " ] ") : 
+            IsCall ? ("{ Call:" + (Content == null ? "null" : Content.ToOneliner()) + "; " + ArgCount + " args }" )
+                : ("{ " + (Content == null ? "null" : Content.ToOneliner()) + " }");
+        
+        public static explicit operator LineElement(Expression target)
+        {
+            if(target.IsBlock) {
+                LineElement result = new LineElement() { 
+                    Type = ElementType.Block, 
+                    Inner = new List<LineElement>(), 
+                    Content = "" 
+                };
+                foreach(Expression e in target.Block) {
+                    result.Inner.Add((LineElement)e);
+                }
+                return result;
+            }
+            else {
+                return target.Content;
+            }
+        }
     }
 
     public class OperatorExpression : Expression

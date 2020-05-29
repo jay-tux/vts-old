@@ -14,7 +14,15 @@ namespace Jay.VTS.Execution
         public static void ParseSingleBlock(StackFrame frame, CodeBlock block) {
             Logger.Log("Parsing block: ");
             Logger.Log(block.ToString(1));
-            Expression parse = SplitExpression.Split(block.Split);
+            /**Expression parse = SplitExpression.Split(block.Split, out uint _);
+            Logger.Log("================================= ALTERNATE PARSING ========================");
+            Expression parse2 = SplitExpression.ToPostFix(block.Split);
+            Logger.Log("======= Converted to LineElement: ======");
+            Logger.Log(((LineElement)parse2).ToOneliner());**/
+            Expression parse = SplitExpression.ToPostFix(block.Split);
+            parse = SplitExpression.Split((LineElement)parse, out uint _);
+            Logger.Log("==== RESULT ====");
+            Logger.Log(parse);
 
             /*if(block.Split.Inner.Count == 0) { return; }
 
@@ -68,7 +76,7 @@ namespace Jay.VTS.Execution
                 Content = "",
                 Inner = (List<LineElement>)block.Slice(index),
                 Parent = null
-            });
+            }, out uint _);
             return CoreStructures.Void;
             /*Logger.Log("Trying to parse expression <" + block.Split[index].ToString(0) + ">");
             LineElement expr = new LineElement() {
