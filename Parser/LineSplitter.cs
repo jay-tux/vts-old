@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Jay.VTS;
 using Jay.VTS.Enums;
+using Jay.VTS.Structures;
 
 namespace Jay.VTS.Parser
 {
@@ -13,10 +14,10 @@ namespace Jay.VTS.Parser
         public static List<string> Control = new List<string>(){
             "if", "else", "elseif", "while", "for"
         };
-        public static List<string> Operator = new List<string>(){
-            "=", "==", /*"+=", "*=", "-=", "/=", "%=",*/ "*", "-", "+", "*", "/", "%", /*"!=", "~", */
+        /*public static List<string> Operator = new List<string>(){
+            "=", "==", /*"+=", "*=", "-=", "/=", "%=", "*", "-", "+", "*", "/", "%", /*"!=", "~", 
             "AND", "OR", "NOT"
-        };
+        };*/
         public static List<string> MultChar = new List<string>(){
             "\\n", "\\t", "\\r"
         };
@@ -192,7 +193,7 @@ namespace Jay.VTS.Parser
             if(tmp == "return") return ElementType.Return;
             if(tmp == "field") return ElementType.Field;
             if(Control.Contains(tmp)) return ElementType.Control;
-            if(Operator.Contains(tmp)) return ElementType.Operator;
+            if(VTSOperator._ops.Contains(tmp)) return ElementType.Operator;
             if(int.TryParse(tmp, out int a) || float.TryParse(tmp, out float b) || 
                 tmp == "true" || tmp == "false" || tmp.Length == 1 || MultChar.Contains(tmp)) return ElementType.Literal;
             return ElementType.Identifier;
