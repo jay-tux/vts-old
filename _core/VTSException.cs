@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Jay.VTS.Execution;
+using Jay.VTS.Structures;
 
 namespace Jay.VTS
 {
@@ -9,6 +10,7 @@ namespace Jay.VTS
 		public new string StackTrace;
 		public string Type;
 		public VTSException Cause;
+
 		public VTSException(string Type, StackFrame Stack, string Message, VTSException Cause) 
 			: base(Message)
 		{
@@ -23,6 +25,13 @@ namespace Jay.VTS
 			this.Type = Type;
 			this.Cause = null;
 		}
+
+		public static VTSException OperatorException(VTSVariable v1, VTSVariable v2, VTSOperator op, StackFrame frame) 
+			=> new VTSException("TypeError", frame, "Operator " + op.ToString() + " is not defined for " +
+				v1.Class.Name + " and " + v2.Class.Name + ".", null);
+		public static VTSException ArgCountException(string Class, string Method, uint req, uint given, StackFrame frame)
+			=> new VTSException("ArgumentError", frame, "Action " + Class + "." + Method + " requires " + req + 
+				" arguments, " + given + " given.", null);
 
 		private string GenTrace(StackFrame Stack)
 		{

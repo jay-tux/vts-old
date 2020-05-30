@@ -12,9 +12,9 @@ namespace Jay.VTS.Structures
         public string Operator { get; private set; }
         private int _prec;
         public static string[] _lgl = new string[]
-            { "_add",   "_sub", "_mul", "_div", "_mod", "_eql", "_lrg", "_sml", "_asg", "_dis", "_con", "_neg" };
+            { "_add",   "_sub", "_mul", "_div", "_mod", "_eql", "_lrg", "_sml", "_asg", "_dis", "_con"/*, "_neg"*/ };
         public static string[] _ops = new string[]
-            { "+",      "-",    "*",    "/",    "%",    "==",   ">",    "<",    "=",    "|",    "&",    "!" };
+            { "+",      "-",    "*",    "/",    "%",    "==",   ">",    "<",    "=",    "|",    "&"/*,    "!"*/ };
 
         public static VTSOperator ADD = new VTSOperator() {         Name = "Add",           ActionName = _lgl[ 0], Operator = _ops[ 0], _prec = 3 };
         public static VTSOperator SUBTRACT = new VTSOperator() {    Name = "Subtract",      ActionName = _lgl[ 1], Operator = _ops[ 1], _prec = 3 };
@@ -27,7 +27,7 @@ namespace Jay.VTS.Structures
         public static VTSOperator ASSIGN = new VTSOperator() {      Name = "Assign",        ActionName = _lgl[ 8], Operator = _ops[ 8], _prec = 0 };
         public static VTSOperator OR = new VTSOperator() {          Name = "Or",            ActionName = _lgl[ 9], Operator = _ops[ 9], _prec = 1 };
         public static VTSOperator AND = new VTSOperator() {         Name = "And",           ActionName = _lgl[10], Operator = _ops[10], _prec = 1 };
-        public static VTSOperator NEGATION = new VTSOperator() {    Name = "Negation",      ActionName = _lgl[11], Operator = _ops[11], _prec = 1 };
+        //public static VTSOperator NEGATION = new VTSOperator() {    Name = "Negation",      ActionName = _lgl[11], Operator = _ops[11], _prec = 1 };
 
         public static bool IsOperator(string name) => _lgl.Contains(name);
 
@@ -43,7 +43,7 @@ namespace Jay.VTS.Structures
             else if(name == _lgl[ 8]) return ASSIGN;
             else if(name == _lgl[ 9]) return OR;
             else if(name == _lgl[10]) return AND;
-            else if(name == _lgl[11]) return NEGATION;
+            //else if(name == _lgl[11]) return NEGATION;
             else throw new VTSException("NameError", "---", "Operator with name " + name + " doesn't exist.");
         }
 
@@ -60,7 +60,7 @@ namespace Jay.VTS.Structures
             else if(name == _ops[ 8]) return ASSIGN;
             else if(name == _ops[ 9]) return OR;
             else if(name == _ops[10]) return AND;
-            else if(name == _ops[11]) return NEGATION;
+            //else if(name == _ops[11]) return NEGATION;
             else throw new VTSException("SymbolError", "---", "Operator with symbol " + name + " doesn't exist.");
         }
 

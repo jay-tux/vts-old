@@ -16,6 +16,8 @@ namespace Jay.VTS.Structures
         public event EventHandler<FrameEventArgs> ActionReturns;
         public VTSVariable Result;
         public List<string> ArgNames;
+        public bool IsInternalCall;
+        public Func<VTSVariable, VTSVariable, StackFrame, VTSVariable> InternalCall;
 
         public void Execute(StackFrame parent){
             Parent = parent;

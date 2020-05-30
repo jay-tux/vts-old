@@ -19,6 +19,10 @@ namespace Jay.VTS.Structures
         public VTSVariable Call(string action, StackFrame frame, List<VTSVariable> args) 
         {
             if(Class.Actions.ContainsKey(action)) {
+                //INTERNAL CALL IS OPERATOR ONLY
+                /*if(Class.Actions[action].IsInternalCall) {
+                    return Class.Actions[action].InternalCall(this, args, frame);
+                }*/
                 if(Class.Actions[action].ArgNames.Count != args.Count) {
                     throw new VTSException("ArgumentError", frame, "Action <" + Class.Name + "." + action + 
                         "> expects " + Class.Actions[action].ArgNames.Count + " arguments, " + args.Count + " given.",
@@ -51,7 +55,7 @@ namespace Jay.VTS.Structures
                 return result;
             }
             else if(Class.Internals.ContainsKey(action)) {
-                return Class.Internals[action](args, frame);
+                return Class.Internals[action](this, args, frame);
             }
             else {
                 throw new VTSException("NameError", frame, "Class " + Class.Name + 
