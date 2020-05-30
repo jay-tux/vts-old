@@ -16,21 +16,23 @@ namespace Jay.VTS.Execution
             try {
                 Logger.Log("Parsing block: ");
                 Logger.Log(block.ToString(1));
-                #if VERBOSE
-                //Logger.Enabled = false;
-                #endif
                 Expression parse = SplitExpression.ToPostFix(block.Split);
                 parse = SplitExpression.Split((LineElement)parse, out uint _);
-                #if VERBOSE
-                //Logger.Enabled = true;
-                #endif
                 Logger.Log("==== RESULT ====");
                 Logger.Log(parse);
             }
             catch(VTSException vtse) {
-                throw new VTSException("RuntimeError", frame, "Something went wrong while parsing an expression.", vtse);
+                frame.Crash(new FrameEventArgs() {
+                    ExitCode = FrameEventArgs.Exits.CodeException,
+                    Error = vtse
+                });
             }
-            catch(Exception) {}
+            catch(Exception e) {
+                frame.Crash(new FrameEventArgs(){
+                    ExitCode = FrameEventArgs.Exits.InternalException,
+                    InternalError = e.Message
+                });
+            }
        }
     }
 }
