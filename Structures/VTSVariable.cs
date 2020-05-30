@@ -50,6 +50,9 @@ namespace Jay.VTS.Structures
                 };
                 return result;
             }
+            else if(Class.Internals.ContainsKey(action)) {
+                return Class.Internals[action](args, frame);
+            }
             else {
                 throw new VTSException("NameError", frame, "Class " + Class.Name + 
                     " doesn't have a member method " + action, null);
