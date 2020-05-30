@@ -2,6 +2,7 @@ using System;
 using Jay.VTS.Enums;
 using System.Linq;
 using System.Collections.Generic;
+using Jay.VTS.Structures;
 
 namespace Jay.VTS.Parser
 {
@@ -18,8 +19,10 @@ namespace Jay.VTS.Parser
 
         public override string ToString() => 
             IsBlock ? ("[ " + string.Join(", ", Block.Select(x => x.ToString())) + " ] ") : 
-            IsCall ? ("{ Call:" + (Content == null ? "null" : Content.ToOneliner()) + "; " + ArgCount + " args }" )
-                : ("{ " + (Content == null ? "null" : Content.ToOneliner()) + " }");
+            IsCall ? ("{ Call:" + (Content == null ? "null" : Content.ToOneliner()) + "; " + ArgCount + " args }" ) : 
+            (Content != null && Content.Type == ElementType.Operator) ? 
+                ("{ Oper:" + ((VTSOperator)Content).ToString() + " }") :
+                ("{ " + (Content == null ? "null" : Content.ToOneliner()) + " }");
         
         public static explicit operator LineElement(Expression target)
         {

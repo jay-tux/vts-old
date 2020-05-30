@@ -85,7 +85,8 @@ namespace Jay.VTS.Parser
             int index = 0;
             while(index < infix.Count) {
                 Logger.Log("Encountered " + infix[index].ToOneliner());
-                if(infix[index].Type != ElementType.Block && infix[index].Type != ElementType.Operator) {
+                if(infix[index].Type != ElementType.Block && infix[index].Type != ElementType.Operator
+                    && infix[index].Type != ElementType.Separator) {
                     result.Block.Add(new Expression() {
                         IsBlock = false, Content = infix[index]
                     });

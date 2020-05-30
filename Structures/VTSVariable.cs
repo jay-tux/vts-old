@@ -1,3 +1,5 @@
+using Jay.VTS.Structures;
+using Jay.VTS.Execution;
 using System.Collections.Generic;
 
 namespace Jay.VTS.Structures
@@ -18,5 +20,19 @@ namespace Jay.VTS.Structures
                 return "~>" + Class.Name;
             }
         }
+
+        /*public void Call(string action, StackFrame frame, List<VTSParameter> args) 
+        {
+            if(Class.Actions.ContainsKey(action)) {
+                StackFrame sf = new StackFrame(Class.Actions[action], 0){ Parent = frame };
+                for(int i = 0; i < args.Count; i++) {
+                    //
+                }
+            }
+            else {
+                throw new VTSException("NameError", frame, "Class " + Class.Name + 
+                    " doesn't have a member method " + action, null);
+            }
+        }*/
     }
 }

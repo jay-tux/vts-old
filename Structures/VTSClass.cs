@@ -24,6 +24,10 @@ namespace Jay.VTS.Structures
             };
         }
 
+        public VTSVariable Create(List<VTSParameter> args) {
+            return null;
+        }
+
         public bool Contains(string structure) => Fields.ContainsKey(structure) || Actions.ContainsKey(structure) 
             || Operators.Keys.ToList().Select(x => x.ActionName).Contains(structure);
 

@@ -1,8 +1,10 @@
 using System;
+using Jay.Logging;
 using System.Collections.Generic;
 using Jay.VTS;
 using Jay.VTS.Parser;
 using Jay.VTS.Execution;
+using Jay.VTS.Enums;
 
 namespace Jay.VTS.Structures
 {
@@ -13,6 +15,7 @@ namespace Jay.VTS.Structures
         public StackFrame Parent;
         public event EventHandler<FrameEventArgs> ActionReturns;
         public VTSVariable Result;
+        public List<string> ArgNames;
 
         public void Execute(StackFrame parent){
             Parent = parent;
@@ -36,8 +39,26 @@ namespace Jay.VTS.Structures
             if(handler != null) handler(this, e);
         }
 
-        public static explicit operator VTSAction(CodeBlock code) => 
-            new VTSAction() { Name = code.Split.Inner[1].Content, Instructions = code };
-        public override string ToString() => "VTSAction::" + Name;
+        public static explicit operator VTSAction(CodeBlock code) { 
+            VTSAction action = new VTSAction() {
+                Name = code.Split.Inner[1].Content,
+                Instructions = code,
+                ArgNames = new List<string>()
+            };
+            code.Split[2].Inner.ForEach(arg => {
+                Logger.Log("   -> Encountered argument " + arg.ToOneliner());
+                if(arg.Type == ElementType.Void) { Logger.Log("   -> Is Void. Ignoring."); }
+                else if(arg.Type == ElementType.Separator) { Logger.Log("    -> Is Comma. Ignoring."); }
+                else { 
+                    Logger.Log("   -> Is real Argument. Adding.");
+                    action.ArgNames.Add(arg.Content);
+                }
+            });
+            Logger.Log("  -> Expecting " + action.ArgNames.Count + 
+                " arguments: [ " + string.Join(", ", action.ArgNames) + " ].");
+            return action;
+        }
+        
+        public override string ToString() => "VTSAction::" + Name + " [" + ArgNames.Count + " args]";
     }
 }

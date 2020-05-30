@@ -7,6 +7,27 @@ namespace Jay.VTS.Structures
     public static class CoreStructures
     {
         #region builtin classes
+        #region Object Class
+        public static VTSClass ObjectClass = new VTSClass() {
+            Name = "Object", Actions = new Dictionary<string, VTSAction>(),
+            Fields = new Dictionary<string, string>(), 
+            Operators = new Dictionary<VTSOperator, VTSAction>(){
+                //
+            },
+            Internals = new Dictionary<string, Func<List<VTSParameter>, StackFrame, VTSVariable>>() {
+                ["tostring"] = ((args, frame) => { 
+                    if(args.Count == 0) return new VTSVariable() {
+                        
+                    }; 
+                    throw new VTSException("ArgumentError", frame, "object.tostring expects zero arguments.", null);
+                }),
+                ["hashcode"] = ((args, frame) => { 
+                    if(args.Count == 0) return new VTSVariable() {}; 
+                    throw new VTSException("ArgumentError", frame, "object.hashcode expects zero arguments.", null);
+                })
+            }
+        };
+        #endregion
         #region Core Class
         public static VTSClass CoreClass = new VTSClass() {
             Name = "Core", Actions = new Dictionary<string, VTSAction>(),
@@ -69,6 +90,18 @@ namespace Jay.VTS.Structures
         public static VTSClass VTSInt = new VTSClass() {
             Name = "int", Actions = new Dictionary<string, VTSAction>(),
             Fields = new Dictionary<string, string>() { ["value"] = "int" }
+        };
+        public static VTSClass VTSString = new VTSClass() {
+            Name = "string", Actions = new Dictionary<string, VTSAction>(),
+            Fields = new Dictionary<string, string>() { ["value"] = "string" }
+        };
+        public static VTSClass VTSFloat = new VTSClass() {
+            Name = "float", Actions = new Dictionary<string, VTSAction>(),
+            Fields = new Dictionary<string, string>() { ["value"] = "float" }
+        };
+        public static VTSClass VTSList = new VTSClass() {
+            Name = "list", Actions = new Dictionary<string, VTSAction>(),
+            Fields = new Dictionary<string, string>() { ["value"] = "List<T>" }
         };
     }
 }

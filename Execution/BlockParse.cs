@@ -17,12 +17,12 @@ namespace Jay.VTS.Execution
                 Logger.Log("Parsing block: ");
                 Logger.Log(block.ToString(1));
                 #if VERBOSE
-                Logger.Enabled = false;
+                //Logger.Enabled = false;
                 #endif
                 Expression parse = SplitExpression.ToPostFix(block.Split);
                 parse = SplitExpression.Split((LineElement)parse, out uint _);
                 #if VERBOSE
-                Logger.Enabled = true;
+                //Logger.Enabled = true;
                 #endif
                 Logger.Log("==== RESULT ====");
                 Logger.Log(parse);
