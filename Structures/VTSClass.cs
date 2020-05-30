@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Jay.VTS;
+using Jay.Xtend;
 using Jay.VTS.Parser;
 using System.Linq;
 using Jay.VTS.Execution;
@@ -13,7 +14,7 @@ namespace Jay.VTS.Structures
         public Dictionary<string, string> Fields;
         public Dictionary<string, VTSAction> Actions;
         public Dictionary<VTSOperator, VTSAction> Operators;
-        public Dictionary<string, Func<List<VTSParameter>, StackFrame, VTSVariable>> Internals;
+        public Dictionary<string, Func<List<VTSVariable>, StackFrame, VTSVariable>> Internals;
 
         public static explicit operator VTSClass(CodeBlock code) {
             return new VTSClass() { 
@@ -24,8 +25,15 @@ namespace Jay.VTS.Structures
             };
         }
 
-        public VTSVariable Create(List<VTSParameter> args) {
-            return null;
+        public VTSVariable Create(StackFrame frame, List<VTSVariable> args) {
+            VTSVariable created = new VTSVariable() {
+                Class = this,
+                Mutable = true,
+                Fields = new Dictionary<string, object>()
+            };
+            Fields.Keys.ForEach(field => created.Fields[field] = CoreStructures.Void);
+            created.Call("new", frame, args);
+            return created;
         }
 
         public bool Contains(string structure) => Fields.ContainsKey(structure) || Actions.ContainsKey(structure) 

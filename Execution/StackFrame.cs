@@ -31,6 +31,8 @@ namespace Jay.VTS.Execution
             this.Variables = new Dictionary<string, VTSVariable>();
         }
 
+        public void Crash(FrameEventArgs eventArgs) => OnStackFrameReturns(eventArgs);
+
         public void AddHandler(EventHandler<FrameEventArgs> handler) => StackFrameReturns += handler;
 
         private void FindEntry(CodeBlock Target) {

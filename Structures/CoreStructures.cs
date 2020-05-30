@@ -14,7 +14,7 @@ namespace Jay.VTS.Structures
             Operators = new Dictionary<VTSOperator, VTSAction>(){
                 //
             },
-            Internals = new Dictionary<string, Func<List<VTSParameter>, StackFrame, VTSVariable>>() {
+            Internals = new Dictionary<string, Func<List<VTSVariable>, StackFrame, VTSVariable>>() {
                 ["tostring"] = ((args, frame) => { 
                     if(args.Count == 0) return new VTSVariable() {
                         
@@ -34,14 +34,14 @@ namespace Jay.VTS.Structures
             Fields = new Dictionary<string, string>(){
                 //
             }, Operators = new Dictionary<VTSOperator, VTSAction>(),
-            Internals = new Dictionary<string, Func<List<VTSParameter>, StackFrame, VTSVariable>>() {
+            Internals = new Dictionary<string, Func<List<VTSVariable>, StackFrame, VTSVariable>>() {
                 ["stdout"] = ((args, frame) => {
                     if(args.Count != 1) {
                         throw new VTSException("ArgumentError", frame, "core.stdout requires exactly one argument, " 
                             + args.Count + " given.", null);
                     }
                     else {
-                        Console.Write(args[0].Value);
+                        Console.Write(args[0].ToString(frame));
                         return Void;
                     }
                 }),
@@ -51,7 +51,7 @@ namespace Jay.VTS.Structures
                             + args.Count + " given.", null);
                     }
                     else {
-                        Console.Error.Write(args[0].Value);
+                        Console.Error.Write(args[0].ToString(frame));
                         return Void;
                     }
                 })
@@ -62,7 +62,7 @@ namespace Jay.VTS.Structures
         public static VTSClass VoidClass = new VTSClass() {
             Name = "Void", Actions = new Dictionary<string, VTSAction>(),
             Fields = new Dictionary<string, string>(), Operators = new Dictionary<VTSOperator, VTSAction>(),
-            Internals = new Dictionary<string, Func<List<VTSParameter>, StackFrame, VTSVariable>>()
+            Internals = new Dictionary<string, Func<List<VTSVariable>, StackFrame, VTSVariable>>()
         };
         #endregion
         #endregion
