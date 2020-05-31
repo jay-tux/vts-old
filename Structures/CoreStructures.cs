@@ -32,6 +32,14 @@ namespace Jay.VTS.Structures
                         Console.Error.Write(args[0].ToString(frame));
                         return Void;
                     }
+                }),
+                ["toString"] = ((caller, args, frame) => {
+                    if(args.Count != 0) 
+                        throw VTSException.ArgCountException("core", "toString", 0, (uint)args.Count, frame);
+                    else return new VTSVariable() { 
+                        Class = VTSString, Mutable = false, 
+                        Fields = new Dictionary<string, object>() { ["value"] = "core" }
+                    };
                 })
             }
         };
@@ -40,7 +48,16 @@ namespace Jay.VTS.Structures
         public static VTSClass VoidClass = new VTSClass() {
             Name = "Void", Actions = new Dictionary<string, VTSAction>(),
             Fields = new Dictionary<string, string>(), Operators = new Dictionary<VTSOperator, VTSAction>(),
-            Internals = new Dictionary<string, Func<VTSVariable, List<VTSVariable>, StackFrame, VTSVariable>>()
+            Internals = new Dictionary<string, Func<VTSVariable, List<VTSVariable>, StackFrame, VTSVariable>>() {
+                ["toString"] = ((caller, args, frame) => {
+                    if(args.Count != 0) 
+                        throw VTSException.ArgCountException("core", "toString", 0, (uint)args.Count, frame);
+                    else return new VTSVariable() { 
+                        Class = VTSString, Mutable = false, 
+                        Fields = new Dictionary<string, object>() { ["value"] = "(void)" }
+                    };
+                })
+            }
         };
         #endregion
         #endregion
@@ -211,6 +228,13 @@ namespace Jay.VTS.Structures
                         else throw VTSException.OperatorException(var1, var2, VTSOperator.EQUALS, frame);
                     }
                 }
+            },
+            Internals = new Dictionary<string, Func<VTSVariable, List<VTSVariable>, StackFrame, VTSVariable>>() {
+                ["toString"] = ((caller, args, frame) => {
+                    if(args.Count != 0) 
+                        throw VTSException.ArgCountException("string", "toString", 0, (uint)args.Count, frame);
+                    else return caller;
+                })
             }
         };
         public static VTSClass VTSFloat = new VTSClass() {

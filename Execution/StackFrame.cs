@@ -95,30 +95,43 @@ namespace Jay.VTS.Execution
                 }
                 else if(content.Type == ElementType.Literal) {
                     Logger.Log("  -> Encountered Literal; parsing and pushing");
-                    //parse literal
-                    VTSVariable parsed = Literal.Parse(content.Content);
-                    if(parsed == null) {
-                        //can't be parsed
-                        throw new VTSException("ValueError", this, 
-                            "The literal <" + content.Content + "> can't be parsed.", null);
-                    }
-                    else {
-                        //success, push
-                        vars.Push(parsed);
-                    }
+                    //parse literal and push to stack
+                    vars.Push(Literal.Parse(content.Content));
                 }
                 else if(content.Type == ElementType.Operator) {
-                    Logger.Log("  -> Encountered Operator; popping operands");
+                    Logger.Log("  -> Encountered Operator; popping operands (2)");
                     //pop 2 vars from stack
                     //try to run operator
                     //push result
                 }
                 else if(content.Type == ElementType.Member) {
-                    Logger.Log("  -> Encountered Member; popping values and caller");
-                    //pop #args from stack
-                    //pop caller from stack
-                    //try to run method
-                    //try to push result on stack
+                    Logger.Log("  -> Encountered Member; popping values (" + sub.ArgCount + ") and caller");
+                    //Try popping args
+                    List<VTSVariable> args = new List<VTSVariable>();
+                    for(int i = 0; i < sub.ArgCount; i++) {
+                        if(vars.Count == 0) {
+                            //not enough args
+                            throw new VTSException("ArgumentError", this, 
+                                "Unable tot pop all the required arguments to call <" + content.Content + ">", null);
+                        }
+                        args.Insert(0, vars.Pop());
+                    }
+
+                    //try popping caller
+                    if(vars.Count == 0) {
+                        //caller is undefined 
+                        throw new VTSException("ArgumentError", this,
+                            "Unable to pop all the required arguments to call <" + content.Content + ">", null);
+                    }
+                    VTSVariable caller = vars.Pop();
+                    Logger.Log("    -> Popped arguments, caller is " + caller.ToString());
+                    Logger.Log("    -> Arguments are (in order): ");
+                    args.ForEach(x => Logger.Log("      -> " + x.ToString()));
+                    //call method
+                    VTSVariable result = caller.Call(content.Content, this, args);
+                    Logger.Log("    -> Result is " + result.ToString());
+                    //push result
+                    vars.Push(result);
                 }
                 else {
                     //error

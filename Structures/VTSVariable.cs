@@ -13,9 +13,26 @@ namespace Jay.VTS.Structures
 
         public override string ToString() => "~>" + (Class == null ? "(typeless)" : Class.Name);
 
-        public string ToString(StackFrame caller) => Class.Actions.ContainsKey("toString") ? 
+        /*public string ToString(StackFrame caller) => 
+            (Class.Actions.ContainsKey("toString") || Class.Internals.ContainsKey("toString")) ? 
                 Call("toString", caller, new List<VTSVariable>()).Fields["value"].ToString() : 
-                ("~>" + Class.Name);
+                ("~>" + Class.Name);*/
+
+        public string ToString(StackFrame caller) {
+            if(Class == null) return "~> (typeless)";
+            if(Class.Actions == null) return "~> (" + Class.Name + ":actionless)";
+            if(Class.Internals == null) return "~> (" + Class.Name + ":internal-less)";
+            if(Class.Actions.ContainsKey("toString") || Class.Internals.ContainsKey("toString")) {
+                VTSVariable res = Call("toString", caller, new List<VTSVariable>());
+                if(res == null) return "(void)";
+                else if(res.Fields == null) return "(fieldless)";
+                else if(res.Fields["value"] == null) return "(void value)";
+                else return res.Fields["value"].ToString();
+            }
+            else {
+                return "~>" + Class.Name;
+            }
+        }
 
         public VTSVariable Call(string action, StackFrame frame, List<VTSVariable> args) 
         {
@@ -60,7 +77,7 @@ namespace Jay.VTS.Structures
             }
             else {
                 throw new VTSException("NameError", frame, "Class " + Class.Name + 
-                    " doesn't have a member method " + action, null);
+                    " doesn't have a member action " + action, null);
             }
         }
     }
