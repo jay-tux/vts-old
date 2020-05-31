@@ -45,32 +45,7 @@ namespace Jay.VTS.Structures
         #endregion
         #endregion
 
-        #region builtin constants
-        public static VTSVariable Void = new VTSVariable() {
-            Class = VoidClass, Mutable = false, Fields = new Dictionary<string, object>()
-        };
-
-        public static VTSVariable Core = new VTSVariable() {
-            Class = CoreClass, Mutable = false, Fields = new Dictionary<string, object>()
-        };
-        #endregion
-
-        public static Dictionary<string, VTSVariable> BuiltinVariables = new Dictionary<string, VTSVariable>() {
-            ["void"] = Void, ["core"] = Core
-        };
-
-        public static List<VTSClass> BuiltinClasses = new List<VTSClass>() { 
-            CoreClass, VoidClass
-        };
-
-        public static VTSVariable False = new VTSVariable() {
-            Class = VTSBool, Mutable = false, Fields = new Dictionary<string, object>() { ["value"] = false }
-        };
-
-        public static VTSVariable True = new VTSVariable() {
-            Class = VTSBool, Mutable = false, Fields = new Dictionary<string, object>() { ["value"] = false }
-        };
-
+        #region Primitives
         public static VTSClass VTSInt = new VTSClass() {
             Name = "int", Actions = new Dictionary<string, VTSAction>(),
             Fields = new Dictionary<string, string>() { ["value"] = "int" },
@@ -425,5 +400,34 @@ namespace Jay.VTS.Structures
                 })
             }
         };
+        #endregion
+
+        #region builtin constants
+        public static VTSVariable Void = new VTSVariable() {
+            Class = VoidClass, Mutable = false, Fields = new Dictionary<string, object>()
+        };
+
+        public static VTSVariable Core = new VTSVariable() {
+            Class = CoreClass, Mutable = false, Fields = new Dictionary<string, object>()
+        };
+
+        public static VTSVariable False = new VTSVariable() {
+            Class = VTSBool, Mutable = false, Fields = new Dictionary<string, object>() { ["value"] = false }
+        };
+
+        public static VTSVariable True = new VTSVariable() {
+            Class = VTSBool, Mutable = false, Fields = new Dictionary<string, object>() { ["value"] = false }
+        };
+        #endregion
+
+        #region Containers
+        public static Dictionary<string, VTSVariable> BuiltinVariables = new Dictionary<string, VTSVariable>() {
+            ["void"] = Void, ["core"] = Core, ["false"] = CoreStructures.False, ["true"] = CoreStructures.True
+        };
+
+        public static List<VTSClass> BuiltinClasses = new List<VTSClass>() { 
+            CoreClass, VoidClass, VTSInt, VTSString, VTSFloat, VTSBool
+        };
+        #endregion
     }
 }

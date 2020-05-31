@@ -66,8 +66,27 @@ namespace Jay.VTS.Execution
 
         public void PrintScope() {
             Logger.Log(" === Current Scope Variables === ");
-            Variables.ForEach(x => Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name));
-            CoreStructures.BuiltinVariables.ForEach(x => Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name));
+            if(Variables == null) {
+                Logger.Log("  -- Variables Dictionary is null --");
+            }
+            else if(CoreStructures.BuiltinVariables == null) {
+                Logger.Log("  -- Core Variables Dictionary is null --");
+            }
+            else {
+                Variables.ForEach(x => { 
+                    /*if(x == null) { Logger.Log("(null/empty entry)"); }
+                    else*/ if(x.Value == null) { Logger.Log("(null/empty variable)"); }
+                    else if(x.Value.Class == null) { Logger.Log("(typeless variable)"); }
+                    else if(x.Value.Class.Name == null) { Logger.Log("(unnamed class type)"); }
+                    else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name); }
+                });
+                CoreStructures.BuiltinVariables.ForEach(x => { 
+                    if(x.Value == null) { Logger.Log(x.Key + ": (null/empty variable)"); }
+                    else if(x.Value.Class == null) { Logger.Log(x.Key + ": (typeless variable)"); }
+                    else if(x.Value.Class.Name == null) { Logger.Log(x.Key + ": (unnamed class type)"); }
+                    else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name); }
+                });
+            }
             Logger.Log(" === End of Overview === ");
         }
 
