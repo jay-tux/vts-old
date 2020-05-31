@@ -16,6 +16,11 @@ namespace Jay.VTS.Structures
         public Dictionary<VTSOperator, VTSAction> Operators;
         /*caller, args, stackframe => variable*/
         public Dictionary<string, Func<VTSVariable, List<VTSVariable>, StackFrame, VTSVariable>> Internals;
+        public VTSVariable TypeRef;
+
+        public VTSClass() {
+            TypeRef = new VTSVariable() { Class = this, Mutable = false, Fields = null, IsTypeRef = true };
+        }
 
         public static explicit operator VTSClass(CodeBlock code) {
             return new VTSClass() { 

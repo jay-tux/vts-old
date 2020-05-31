@@ -61,6 +61,8 @@ namespace Jay.VTS.Structures
             return action;
         }
         
-        public override string ToString() => "VTSAction::" + Name + " [" + ArgNames.Count + " args]";
+        public override string ToString() => "VTSAction::" + ((IsInternalCall) ?
+            Name + " [__internal call__]" : 
+            Name + " [" + ArgNames.Count + " args]");
     }
 }

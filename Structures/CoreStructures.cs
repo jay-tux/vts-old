@@ -425,8 +425,9 @@ namespace Jay.VTS.Structures
             ["void"] = Void, ["core"] = Core, ["false"] = CoreStructures.False, ["true"] = CoreStructures.True
         };
 
-        public static List<VTSClass> BuiltinClasses = new List<VTSClass>() { 
-            CoreClass, VoidClass, VTSInt, VTSString, VTSFloat, VTSBool
+        public static Dictionary<string, VTSClass> BuiltinClasses = new Dictionary<string, VTSClass>() { 
+            ["Core"] = CoreClass, ["Voidtype"] = VoidClass, 
+            ["int"] = VTSInt, ["string"] = VTSString, ["float"] = VTSFloat, ["bool"] = VTSBool
         };
         #endregion
     }

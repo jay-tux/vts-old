@@ -12,7 +12,7 @@ namespace Jay.VTS.Execution
 {
     public class BlockParse
     {
-        public static void ParseSingleBlock(StackFrame frame, CodeBlock block) {
+        public static Expression ParseSingleBlock(StackFrame frame, CodeBlock block) {
             try {
                 Logger.Log("Parsing block: ");
                 Logger.Log(block.ToString(1));
@@ -20,18 +20,21 @@ namespace Jay.VTS.Execution
                 parse = SplitExpression.Split((LineElement)parse, out uint _);
                 Logger.Log("==== RESULT ====");
                 Logger.Log(parse);
+                return parse;
             }
             catch(VTSException vtse) {
                 frame.Crash(new FrameEventArgs() {
                     ExitCode = FrameEventArgs.Exits.CodeException,
                     Error = vtse
                 });
+                return null;
             }
             catch(Exception e) {
                 frame.Crash(new FrameEventArgs(){
                     ExitCode = FrameEventArgs.Exits.InternalException,
                     InternalError = e.Message
                 });
+                return null;
             }
        }
     }

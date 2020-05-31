@@ -21,7 +21,8 @@ namespace Jay.VTS
 		public CodeBlock Pass;
 		public CodeBlock Root;
 		public string Filename { get; }
-		public List<VTSClass> Classes = new List<VTSClass>() { CoreStructures.CoreClass, CoreStructures.VoidClass };
+		//public List<VTSClass> Classes = new List<VTSClass>() { CoreStructures.CoreClass, CoreStructures.VoidClass };
+		public Dictionary<string, VTSClass> Classes = new Dictionary<string, VTSClass>();
 		public static Interpreter Instance;
 
 		public static void Create(string file) {
@@ -37,7 +38,7 @@ namespace Jay.VTS
 
 		private Interpreter(string file)
 		{
-			Classes = new List<VTSClass>();
+			Classes = new Dictionary<string, VTSClass>();
 			if(file == "--interactive")
 			{
 				//start interactive session
@@ -72,17 +73,23 @@ namespace Jay.VTS
 			return this;
 		}
 
-		public bool ContainsClass(string ClassName) => this.Classes.Select(x => x.Name).Contains(ClassName);
+		public bool ContainsClass(string ClassName) => this.Classes.ContainsKey(ClassName);
 		public void PrintClasses() => Console.WriteLine(Classes.Count + " Classes in memory: " + string.Join(", ", Classes));
-		public void AddClass(VTSClass ClassCode) => this.Classes.Add(ClassCode);
+		public void AddClass(VTSClass ClassCode) => this.Classes[ClassCode.Name] = ClassCode;
 		
 		public void PrintAll() {
 			Logger.Log(" ===== Current Memory Structures: =====");
 			Classes.ForEach(cls => {
-				Logger.Log(" -> " + cls + " [" + cls.Actions.Keys.Count +" actions]");
-				cls.Fields.Keys.ForEach(fld => Logger.Log("   -> Field::" + fld));
-				cls.Actions.Values.ForEach(act => Logger.Log("   -> Action::" + act));
-				cls.Operators.AsEnumerable().ForEach(x => Logger.Log("   -> Operator<" + x.Key + ">::" + x.Value));
+				Logger.Log(" -> " + cls.Key + " [" + cls.Value.Actions.Keys.Count +" actions]");
+				cls.Value.Fields.Keys.ForEach(fld => Logger.Log("   -> Field::" + fld));
+				cls.Value.Actions.Values.ForEach(act => Logger.Log("   -> Action::" + act));
+				cls.Value.Operators.AsEnumerable().ForEach(x => Logger.Log("   -> Operator<" + x.Key + ">::" + x.Value));
+			});
+			CoreStructures.BuiltinClasses.ForEach(cls => {
+				Logger.Log(" -> " + cls.Key + " [" + cls.Value.Actions.Keys.Count +" actions]");
+				cls.Value.Fields.Keys.ForEach(fld => Logger.Log("   -> Field::" + fld));
+				cls.Value.Actions.Values.ForEach(act => Logger.Log("   -> Action::" + act));
+				cls.Value.Operators.AsEnumerable().ForEach(x => Logger.Log("   -> Operator<" + x.Key + ">::" + x.Value));
 			});
 			Logger.Log(" ===== End of Overview ===== ");
 		}

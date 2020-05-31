@@ -8,9 +8,10 @@ namespace Jay.VTS.Structures
     {
         public VTSClass Class;
         public bool Mutable;
+        public bool IsTypeRef = false;
         public Dictionary<string, object> Fields;
 
-        public override string ToString() => "~>" + Class.Name;
+        public override string ToString() => "~>" + (Class == null ? "(typeless)" : Class.Name);
 
         public string ToString(StackFrame caller) => Class.Actions.ContainsKey("toString") ? 
                 Call("toString", caller, new List<VTSVariable>()).Fields["value"].ToString() : 
