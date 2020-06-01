@@ -19,15 +19,6 @@ namespace Jay.VTS.Execution
         public Dictionary<string, VTSVariable> Variables;
         public VTSClass ParentClass;
 
-        /*public StackFrame(CodeBlock Root) {
-            this.Root = Root;
-            Logger.Log("        ==== INITIALIZING DEFAULT STACKFRAME ====       ");
-            Logger.Log((string)Root);
-            Logger.Log("        ==== DEFAULT STACKFRAME INITIALIZED  ====       ");
-            FindEntry(this.Root);
-            this.Variables = new Dictionary<string, VTSVariable>();
-        }*/
-
         public static StackFrame FindEntry(CodeBlock master) 
         {
             //search entry (recursively) in file/root blocks
@@ -60,27 +51,6 @@ namespace Jay.VTS.Execution
         public void Crash(FrameEventArgs eventArgs) => OnStackFrameReturns(eventArgs);
 
         public void AddHandler(EventHandler<FrameEventArgs> handler) => StackFrameReturns += handler;
-
-        /*private void FindEntry(CodeBlock Target) {
-            if(Target.Contents != null) {
-                Target.Contents.ForEach(x => {
-                    if(x.Type == "file" || x.Type == "root") {
-                        FindEntry(x);
-                    }
-                    else if(x.Type == "entry") {
-                        if(x.Contents == null || x.Contents.Count == 0) { 
-                            OnStackFrameReturns(new FrameEventArgs().SetExitCode(FrameEventArgs.Exits.Return));
-                        }
-                        Pointer = x.Contents[0];
-                        Index = 0;
-                    }
-                });
-            }
-
-            if(Target == Root && Pointer == null) {
-                throw new VTSException("NoEntryError", this, "VTS-Entry is not set.", null);
-            }
-        }*/
 
         public void Execute() {
             try {
