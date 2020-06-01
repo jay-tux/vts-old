@@ -195,7 +195,7 @@ namespace Jay.VTS.Parser
             if(Control.Contains(tmp)) return ElementType.Control;
             if(VTSOperator._ops.Contains(tmp)) return ElementType.Operator;
             if(int.TryParse(tmp, out int a) || float.TryParse(tmp, out float b) || 
-                tmp == "true" || tmp == "false" || tmp.Length == 1 || MultChar.Contains(tmp)) return ElementType.Literal;
+                tmp == "true" || tmp == "false" /*|| tmp.Length == 1 || MultChar.Contains(tmp)*/) return ElementType.Literal;
             return ElementType.Identifier;
         }
     }

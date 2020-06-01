@@ -48,6 +48,11 @@ namespace Jay.VTS.Structures
                     BuiltinVariables.Keys.ForEach(x => Console.WriteLine(x + "-> " + BuiltinVariables[x].ToString(frame)));
                     Console.WriteLine(" ==== Scope  Variables: ====");
                     frame.Variables.Keys.ForEach(x => Console.WriteLine(x + "-> " + frame.Variables[x].ToString(frame)));
+                    if(frame.IsCopyFrame) {
+                        Console.WriteLine(" ==== Super  Variables: ====");
+                        frame.Parent.Variables.Keys.ForEach(x =>
+                            Console.WriteLine(x + "-> " + frame.Parent.Variables[x].ToString(frame)));
+                    }
                     Console.WriteLine(" ==== Stack Frame Dump: ====");
                     StackFrame temp = frame;
                     while(temp != null) {
@@ -55,6 +60,12 @@ namespace Jay.VTS.Structures
                         temp = temp.Parent;
                     }
                     Console.WriteLine(" ====  End  of  Dump  ====\n");
+                    return Void;
+                }),
+                ["wait"] = ((caller, args, frame) => {
+                    if(args.Count != 0)
+                        throw VTSException.ArgCountException("core", "wait", 0, (uint)args.Count, frame);
+                    Console.ReadKey();
                     return Void;
                 })
             }

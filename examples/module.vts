@@ -2,24 +2,13 @@
 #load <fibonacci.vts>;
 
 entry () {
-    core.vardump();
-    tmp = true;
-    if(tmp == true) {
-        core.stdout("TRUE!\n");
-        tmp = false;
-        core.stdout(tmp);
-        core.stdout("\n");
-        core.vardump();
-    }
-    if(tmp == false) {
-        core.stdout("False?!?!\n");
-    }
-    core.stdout(tmp);
-    core.stdout("\n");
+    a = 2;
+    b = a;
+    a = 2 + b;
     core.vardump();
     return;
     tmp = void;
-    core.stdout(" --- Trying to calculate the faculty of the 6th Fibonacci number --- \n");
-    core.stdout(faculty.new().calc(fibonacci.new().calc(6)));
+    core.stdout(" --- Trying to calculate the faculty of the 4th Fibonacci number --- \n");
+    core.stdout(faculty.new().calc(fibonacci.new().calc(4)));
     core.stderr("No errors!\n");
 }

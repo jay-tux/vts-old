@@ -44,9 +44,6 @@ namespace Jay.VTS.Structures
 
         public VTSVariable Call(LineElement action, StackFrame frame, VTSVariable other) 
         {
-            Logger.Log("Trying to run:" + action.ToOneliner());
-            Logger.Log("Bool operators: ");
-            CoreStructures.VTSBool.Operators.Keys.ForEach(x => Logger.Log(x));
             if(Class.Operators.ContainsKey((VTSOperator)action)) {
                 VTSAction toRun = Class.Operators[(VTSOperator)action];
                 if(toRun.IsInternalCall) {
@@ -94,16 +91,9 @@ namespace Jay.VTS.Structures
 
         public VTSVariable Call(string action, StackFrame frame, List<VTSVariable> args) 
         {
-            Logger.Log(" ======= Call  details: ======");
-            Logger.Log("Action = " + action);
-            Logger.Log("Args = " + string.Join(", ", args.Select(x => x.Class)));
-            Logger.Log("Caller = " + Class);
-            if(Fields != null) Fields.Keys.ForEach(x => Logger.Log("  [" + x + "] = [" + Fields[x] + "]"));
-            Logger.Log(" ======= End of details ======");
             if(IsTypeRef) {
                 //special case: static action aka constructor
                 if(action == "new") {
-                    Logger.Log("Trying to execute constructor...");
                     //execute constructor, return result
                     return Class.Create(frame, args);
                 }
@@ -114,7 +104,6 @@ namespace Jay.VTS.Structures
                 }
             }
             else if(Class.Actions.ContainsKey(action)) {
-                Logger.Log("Trying to execute non-internal action...");
                 if(Class.Actions[action].ArgNames.Count != args.Count) {
                     throw new VTSException("ArgumentError", frame, "Action <" + Class.Name + "." + action + 
                         "> expects " + Class.Actions[action].ArgNames.Count + " arguments, " + args.Count + " given.",
@@ -152,7 +141,6 @@ namespace Jay.VTS.Structures
                 return result;
             }
             else if(Class.Internals.ContainsKey(action)) {
-                Logger.Log("Trying to execute internal action...");
                 return Class.Internals[action](this, args, frame);
             }
             else {

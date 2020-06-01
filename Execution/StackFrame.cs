@@ -19,7 +19,8 @@ namespace Jay.VTS.Execution
         public Dictionary<string, VTSVariable> Variables;
         public VTSClass ParentClass;
         protected VTSVariable TempValue;
-        protected bool IsCopyFrame;
+        public bool IsCopyFrame;
+        private bool Finished = false;
 
         public static StackFrame FindEntry(CodeBlock master) 
         {
@@ -61,9 +62,8 @@ namespace Jay.VTS.Execution
                 //Console.WriteLine("Currently at: " + (string)Pointer);
                 Interpreter.Instance.PrintAll();
                 PrintScope();
-                bool finished = false;
-                FrameEventArgs args = new FrameEventArgs() { ExitCode = FrameEventArgs.Exits.Return };
-                while(!finished && Index < Root.Contents.Count) {
+                FrameEventArgs args = new FrameEventArgs() { ExitCode = FrameEventArgs.Exits.EOF };
+                while(!Finished && Index < Root.Contents.Count) {
                     Pointer = Root.Contents[Index];
                     Logger.Log(" ------ Index: " + Index + " ------ ");
                     if(Pointer.Split.Inner.Count > 0) {
@@ -77,7 +77,7 @@ namespace Jay.VTS.Execution
                             case ElementType.Return:
                                 //return; set expression value as return value and stop execution.
                                 Logger.Log("StackFrame finished with return call.");
-                                finished = true;
+                                Finished = true;
                                 RunExpression(BlockParse.ParseSingleBlock(this, Pointer));
                                 args.ExitCode = FrameEventArgs.Exits.ReturnValue;
                                 args.ReturnValue = TempValue;
@@ -115,8 +115,17 @@ namespace Jay.VTS.Execution
                 };
                 copy.StackFrameReturns += (src, args) => {
                     if(args.ExitCode == FrameEventArgs.Exits.CodeException ||
-                        args.ExitCode == FrameEventArgs.Exits.InternalException)
+                        args.ExitCode == FrameEventArgs.Exits.InternalException) {
                         Crash(args);
+                        Finished = true;
+                    }
+                    else if(args.ExitCode == FrameEventArgs.Exits.Return ||
+                        args.ExitCode == FrameEventArgs.Exits.ReturnValue) {
+                        Crash(args);
+                        Finished = true;
+                    }
+                    else {
+                    }
                 };
                 copy.Execute();
             }
@@ -175,6 +184,11 @@ namespace Jay.VTS.Execution
                     //try to run operator
                     if((VTSOperator)content == VTSOperator.ASSIGN) {
                         //special case: assignment (can be null)
+                        Logger.Log("\\e[32m");
+                        Logger.Log("Operand 1: " + operand1.ToString(this) + "$" + 
+                            (operand1.Class == null ? "(typeless)" : operand1.Class.Name) + "~'" + operand1.Name + "'");
+                        Logger.Log("Operand 2: " + operand2.ToString(this) + "$" + 
+                            (operand2.Class == null ? "(typeless)" : operand2.Class.Name) + "~'" + operand2.Name + "'");
                         if(operand1.Name == "this") {
                             //error: can't change this reference
                             throw new VTSException("ReferenceError", this, "Cannot assign to <this> because it's read-only.", null);
@@ -204,13 +218,21 @@ namespace Jay.VTS.Execution
                         else if(Variables.ContainsKey(operand1.Name)) {
                             //update in frame
                             Variables[operand1.Name] = operand2;
-                            operand2.Name = operand1.Name;
+                            if(operand2.Name == null || !Variables.ContainsKey(operand2.Name)) {
+                                operand2.Name = operand1.Name;
+                            }
                         }
                         else {
                             //add in frame
                             Variables[operand1.Name] = operand2;
-                            operand2.Name = operand1.Name;
-                        }
+                            if(operand2.Name == null || !Variables.ContainsKey(operand2.Name)) {
+                                operand2.Name = operand1.Name;
+                            }
+                        }           
+                        Logger.Log("Result   : " + Variables[operand1.Name].ToString(this) + "$" + 
+                            (Variables[operand1.Name].Class == null ? "(typeless)" : Variables[operand1.Name].Class.Name) + 
+                            "~'" + Variables[operand1.Name].Name + "'");
+                        Logger.Log("");
                     }
                     else {
                         //normal case, call
@@ -265,7 +287,17 @@ namespace Jay.VTS.Execution
                         "are allowed in an Expression.", null);
                 }
                 Logger.Log("  ----------- Current Stack: ----------");
-                vars.ToArray().ForEach(x => Logger.Log(" ^: " + x.ToString()));
+                vars.ToArray().ForEach(x => {
+                    if(x.Class == null) {
+                        Logger.Log(" ^: Uninitialized variable: " + x.Name);
+                    }
+                    else if(x.IsTypeRef) {
+                        Logger.Log(" ^: TypeRef$" + x.Class.Name);
+                    }
+                    else {
+                        Logger.Log(" ^: " + x.Name + "#" + x.Class.Name + "::" + x.ToString(this));
+                    }
+                });
                 Logger.Log(" ------------                ----------");
             }
             if(vars.Count == 1) {

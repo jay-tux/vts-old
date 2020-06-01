@@ -16,14 +16,14 @@ namespace Jay.VTS.Structures
         public static string[] _ops = new string[]
             { "+",      "-",    "*",    "/",    "%",    "==",   ">",    "<",    "=",    "|",    "&"/*,    "!"*/ };
 
-        public static VTSOperator ADD = new VTSOperator() {         Name = "Add",           ActionName = _lgl[ 0], Operator = _ops[ 0], _prec = 3 };
-        public static VTSOperator SUBTRACT = new VTSOperator() {    Name = "Subtract",      ActionName = _lgl[ 1], Operator = _ops[ 1], _prec = 3 };
-        public static VTSOperator MULTIPLY = new VTSOperator() {    Name = "Multiply",      ActionName = _lgl[ 2], Operator = _ops[ 2], _prec = 4 };
-        public static VTSOperator DIVIDE = new VTSOperator() {      Name = "Divide",        ActionName = _lgl[ 3], Operator = _ops[ 3], _prec = 4 };
-        public static VTSOperator MODULUS = new VTSOperator() {     Name = "Modulus",       ActionName = _lgl[ 4], Operator = _ops[ 4], _prec = 2 };
-        public static VTSOperator EQUALS = new VTSOperator() {      Name = "Equal to",      ActionName = _lgl[ 5], Operator = _ops[ 5], _prec = 1 };
-        public static VTSOperator LARGER = new VTSOperator() {      Name = "Larger than",   ActionName = _lgl[ 6], Operator = _ops[ 6], _prec = 1 };
-        public static VTSOperator SMALLER = new VTSOperator() {     Name = "Smaller than",  ActionName = _lgl[ 7], Operator = _ops[ 7], _prec = 1 };
+        public static VTSOperator ADD = new VTSOperator() {         Name = "Add",           ActionName = _lgl[ 0], Operator = _ops[ 0], _prec = 4 };
+        public static VTSOperator SUBTRACT = new VTSOperator() {    Name = "Subtract",      ActionName = _lgl[ 1], Operator = _ops[ 1], _prec = 4 };
+        public static VTSOperator MULTIPLY = new VTSOperator() {    Name = "Multiply",      ActionName = _lgl[ 2], Operator = _ops[ 2], _prec = 5 };
+        public static VTSOperator DIVIDE = new VTSOperator() {      Name = "Divide",        ActionName = _lgl[ 3], Operator = _ops[ 3], _prec = 5 };
+        public static VTSOperator MODULUS = new VTSOperator() {     Name = "Modulus",       ActionName = _lgl[ 4], Operator = _ops[ 4], _prec = 3 };
+        public static VTSOperator EQUALS = new VTSOperator() {      Name = "Equal to",      ActionName = _lgl[ 5], Operator = _ops[ 5], _prec = 2 };
+        public static VTSOperator LARGER = new VTSOperator() {      Name = "Larger than",   ActionName = _lgl[ 6], Operator = _ops[ 6], _prec = 2 };
+        public static VTSOperator SMALLER = new VTSOperator() {     Name = "Smaller than",  ActionName = _lgl[ 7], Operator = _ops[ 7], _prec = 2 };
         public static VTSOperator ASSIGN = new VTSOperator() {      Name = "Assign",        ActionName = _lgl[ 8], Operator = _ops[ 8], _prec = 0 };
         public static VTSOperator OR = new VTSOperator() {          Name = "Or",            ActionName = _lgl[ 9], Operator = _ops[ 9], _prec = 1 };
         public static VTSOperator AND = new VTSOperator() {         Name = "And",           ActionName = _lgl[10], Operator = _ops[10], _prec = 1 };

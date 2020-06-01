@@ -1,0 +1,8 @@
+entry () {
+    a = 2;
+    core.vardump();
+    b = a;
+    core.vardump();
+    a = 2 + b;
+    core.vardump();
+}

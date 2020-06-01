@@ -23,11 +23,14 @@ namespace Jay.VTS
 		public string Filename { get; }
 		//public List<VTSClass> Classes = new List<VTSClass>() { CoreStructures.CoreClass, CoreStructures.VoidClass };
 		public Dictionary<string, VTSClass> Classes = new Dictionary<string, VTSClass>();
+		public List<VTSVariable> Variables;
 		public static Interpreter Instance;
 
 		public static void Create(string file) {
 			if(Instance == null) {
-				Instance = new Interpreter(file);
+				Instance = new Interpreter(file) {
+					Variables = new List<VTSVariable>()
+				};
 			}
 			else {
 				Console.Error.WriteLine(" --> Instance is already set.");

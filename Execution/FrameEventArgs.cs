@@ -5,7 +5,7 @@ namespace Jay.VTS.Execution
 {
     public class FrameEventArgs : EventArgs 
     {
-        public enum Exits { ReturnValue = -1, Return = 0, InternalException = 1, CodeException = 2 }
+        public enum Exits { EOF = -2, ReturnValue = -1, Return = 0, InternalException = 1, CodeException = 2 }
         public Exits ExitCode;
         public VTSException Error;
         public string InternalError;
