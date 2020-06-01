@@ -22,8 +22,11 @@ namespace Jay.VTS.Execution
         public bool IsCopyFrame;
         private bool Finished = false;
 
+        public static void Overview() => Interpreter.Instance.PrintAll();
+
         public static StackFrame FindEntry(CodeBlock master) 
         {
+            if(master.Type == "root") Overview();
             //search entry (recursively) in file/root blocks
             if(master.Type == "root" || master.Type == "file") {
                 bool found = false;
@@ -60,8 +63,8 @@ namespace Jay.VTS.Execution
         public void Execute() {
             try {
                 //Console.WriteLine("Currently at: " + (string)Pointer);
-                Interpreter.Instance.PrintAll();
-                PrintScope();
+                //Interpreter.Instance.PrintAll();
+                //PrintScope();
                 FrameEventArgs args = new FrameEventArgs() { ExitCode = FrameEventArgs.Exits.EOF };
                 while(!Finished && Index < Root.Contents.Count) {
                     Pointer = Root.Contents[Index];
@@ -128,6 +131,10 @@ namespace Jay.VTS.Execution
                     }
                 };
                 copy.Execute();
+                if(!Finished && block.Split.Inner[0].Content == "while") {
+                    Logger.Log("Is while loop; jumpback...");
+                    Index--;
+                }
             }
             else {
                 Logger.Log(" === CONTROL RESULTED IN FALSE ===");
@@ -184,7 +191,7 @@ namespace Jay.VTS.Execution
                     //try to run operator
                     if((VTSOperator)content == VTSOperator.ASSIGN) {
                         //special case: assignment (can be null)
-                        Logger.Log("\\e[32m");
+                        Logger.Log("");
                         Logger.Log("Operand 1: " + operand1.ToString(this) + "$" + 
                             (operand1.Class == null ? "(typeless)" : operand1.Class.Name) + "~'" + operand1.Name + "'");
                         Logger.Log("Operand 2: " + operand2.ToString(this) + "$" + 
@@ -228,10 +235,24 @@ namespace Jay.VTS.Execution
                             if(operand2.Name == null || !Variables.ContainsKey(operand2.Name)) {
                                 operand2.Name = operand1.Name;
                             }
-                        }           
-                        Logger.Log("Result   : " + Variables[operand1.Name].ToString(this) + "$" + 
-                            (Variables[operand1.Name].Class == null ? "(typeless)" : Variables[operand1.Name].Class.Name) + 
-                            "~'" + Variables[operand1.Name].Name + "'");
+                        }       
+                        if(Variables.ContainsKey(operand1.Name)) {
+                            Logger.Log("Getting result from local vars [" + 
+                                string.Join(", ", Variables.Keys) + "]...");
+                            Logger.Log("Result   : " + Variables[operand1.Name].ToString(this) + "$" + 
+                                (Variables[operand1.Name].Class == null ? "(typeless)" : Variables[operand1.Name].Class.Name) + 
+                                "~'" + Variables[operand1.Name].Name + "'");
+                        }    
+                        else if(Parent.Variables.ContainsKey(operand1.Name)){
+                            Logger.Log("Getting result from parent's vars [" +
+                                string.Join(", ", Parent.Variables.Keys) + "]...");
+                            Logger.Log("Result   : " + Parent.Variables[operand1.Name].ToString(this) + "$" + 
+                                (Parent.Variables[operand1.Name].Class == null ? "(typeless)" : Parent.Variables[operand1.Name].Class.Name) + 
+                                "~'" + Parent.Variables[operand1.Name].Name + "'");
+                        }
+                        else {
+                            Logger.Log("Issue: var " + operand1.Name + " neither in local nor parent's vars...");
+                        }
                         Logger.Log("");
                     }
                     else {
@@ -318,6 +339,7 @@ namespace Jay.VTS.Execution
                 Logger.Log("  -- Core Variables Dictionary is null --");
             }
             else {
+                Logger.Log("^: Local variables");
                 Variables.ForEach(x => { 
                     /*if(x == null) { Logger.Log("(null/empty entry)"); }
                     else*/ if(x.Value == null) { Logger.Log("(null/empty variable)"); }
@@ -326,6 +348,7 @@ namespace Jay.VTS.Execution
                     else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name); }
                 });
                 if(IsCopyFrame && Parent.Variables != null) {
+                    Logger.Log("^: Inherited Copy variables");
                     Parent.Variables.ForEach(x => {
                         if(x.Value == null) { Logger.Log("(null/empty variable)"); }
                         else if(x.Value.Class == null) { Logger.Log("(typeless variable)"); }
@@ -333,6 +356,7 @@ namespace Jay.VTS.Execution
                         else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name); }
                     });
                 }
+                Logger.Log("^: Global variables");
                 CoreStructures.BuiltinVariables.ForEach(x => { 
                     if(x.Value == null) { Logger.Log(x.Key + ": (null/empty variable)"); }
                     else if(x.Value.Class == null) { Logger.Log(x.Key + ": (typeless variable)"); }

@@ -1,8 +1,8 @@
 entry () {
-    a = 2;
-    core.vardump();
-    b = a;
-    core.vardump();
-    a = 2 + b;
-    core.vardump();
+    a = 5;
+    while(a > 0) {
+        core.stdout(a);
+        a = a - 1;
+    }
+    core.stdout("\n");
 }

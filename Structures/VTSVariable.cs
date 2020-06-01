@@ -34,6 +34,7 @@ namespace Jay.VTS.Structures
                 VTSVariable res = Call("toString", caller, new List<VTSVariable>());
                 if(res == null) return "(void)";
                 else if(res.Fields == null) return "(fieldless)";
+                else if(!res.Fields.ContainsKey("value")) return "(incorrect toString function)";
                 else if(res.Fields["value"] == null) return "(void value)";
                 else return res.Fields["value"].ToString();
             }

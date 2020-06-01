@@ -94,7 +94,7 @@ namespace Jay.VTS
 				cls.Value.Actions.Values.ForEach(act => Logger.Log("   -> Action::" + act));
 				cls.Value.Operators.AsEnumerable().ForEach(x => Logger.Log("   -> Operator<" + x.Key + ">::" + x.Value));
 			});
-			Logger.Log(" ===== End of Overview ===== ");
+			Logger.Log(" ===== End of Overview ===== \n\n");
 		}
 
 		public Interpreter LoadImports() {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jay.Logging;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -16,8 +17,12 @@ namespace Jay.VTS
 		{
 			try
 			{
+				Logger.Log("+====================================+\n" + " Started execution at " + 
+					System.DateTime.Now.ToLongTimeString() + "\n+====================================+\n");
 				Interpreter.Create(args.Length < 1 ? "--interactive" : args[0]);
 				Interpreter.Instance.FirstPass().LoadVTSModules().LoadImports().SecondPass();
+				Logger.Log("+====================================+\n" + " Execution finished at " + 
+					System.DateTime.Now.ToLongTimeString() + "\n+====================================+\n");
 			}
 			catch(VTSException vtse)
 			{
