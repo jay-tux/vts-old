@@ -117,6 +117,9 @@ namespace Jay.VTS
 			Root.Contents.ForEach(fil => Logger.Log(fil.ToParentString(0) + "\n"));
 			//Console.WriteLine(" ------ ");
 			StackFrame rootFrame = StackFrame.FindEntry(Root);
+			if(rootFrame == null) {
+				throw new VTSException("NoEntryError", "secondPass::entry", "VTS Entry point not set.");
+			}
 			rootFrame.StackFrameReturns += (src, args) => {
 				switch(args.ExitCode) {
 					case FrameEventArgs.Exits.Return:
