@@ -1,17 +1,13 @@
 # !/bin/bash
 
 compile='false'
-run='false'
 debug='false'
 verbose='false'
 
-while getopts 'cdvrh' opt; do
+while getopts 'cdvh' opt; do
 	case $opt in
 		'c')
 			compile='true'
-			;;
-		'r')
-			run='true'
 			;;
 		'd')
 			debug='true'
@@ -54,7 +50,4 @@ if [[ $compile == 'true' ]]; then
 		>&2 echo "Failed to compile." 
 		exit -1
 	fi
-fi
-if [[ $run == 'true' ]]; then
-	mono bin/vts-parse.exe &
 fi
