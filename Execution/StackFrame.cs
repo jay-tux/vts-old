@@ -19,6 +19,7 @@ namespace Jay.VTS.Execution
         public Dictionary<string, VTSVariable> Variables;
         public VTSClass ParentClass;
         protected VTSVariable TempValue;
+        protected bool IsCopyFrame;
 
         public static StackFrame FindEntry(CodeBlock master) 
         {
@@ -43,6 +44,7 @@ namespace Jay.VTS.Execution
         }
 
         public StackFrame(CodeBlock Root, int EntryIndex) {
+            this.IsCopyFrame = false;
             this.Root = Root;
             this.Index = EntryIndex;
             //Pointer = Root.Contents[EntryIndex];
@@ -63,14 +65,14 @@ namespace Jay.VTS.Execution
                 FrameEventArgs args = new FrameEventArgs() { ExitCode = FrameEventArgs.Exits.Return };
                 while(!finished && Index < Root.Contents.Count) {
                     Pointer = Root.Contents[Index];
-                    Logger.Log(" ------ Index: " + Index + "; CodeBlock: " + (string)Pointer + " ------ ");
+                    Logger.Log(" ------ Index: " + Index + " ------ ");
                     if(Pointer.Split.Inner.Count > 0) {
                         //Is nonempty
                         LineElement lead = Pointer.Split.Inner[0];
                         switch(lead.Type) {
                             case ElementType.Control:
-                                //control elements: uses inner blocks (complicated stuff...)
-                                Logger.Log("Ewww, control elements, REEEEE");
+                                Logger.Log("Encountered control call (either if, else or while)");
+                                ControlCall(Pointer);
                                 break;
                             case ElementType.Return:
                                 //return; set expression value as return value and stop execution.
@@ -101,6 +103,28 @@ namespace Jay.VTS.Execution
             }
         }
 
+        private void ControlCall(CodeBlock block) 
+        {
+            Logger.Log(" === Trying to resolve control call ===");
+            RunExpression(BlockParse.ParseSingleBlock(this, block.Split.Inner[1]));
+            if(TempValue.Class == CoreStructures.VTSBool && (bool)TempValue.Fields["value"] == true) {
+                Logger.Log(" === CONTROL RESULTED IN TRUE ===");
+                StackFrame copy = new StackFrame(block, 0) {
+                    IsCopyFrame = true,
+                    Parent = this
+                };
+                copy.StackFrameReturns += (src, args) => {
+                    if(args.ExitCode == FrameEventArgs.Exits.CodeException ||
+                        args.ExitCode == FrameEventArgs.Exits.InternalException)
+                        Crash(args);
+                };
+                copy.Execute();
+            }
+            else {
+                Logger.Log(" === CONTROL RESULTED IN FALSE ===");
+            }
+        }
+
         private void RunExpression(Expression e) {
             if(e == null) return;
             Logger.Log(" == Running Expression " + e.ToString() + " ==");if(!e.IsBlock) throw new VTSException("ParseError", this, "Expression should be a block type.", null);
@@ -118,6 +142,10 @@ namespace Jay.VTS.Execution
                     else if(Variables.ContainsKey(rfr)) {
                         //Is scope variable, push var ref
                         vars.Push(Variables[rfr]);
+                    }
+                    else if(IsCopyFrame && Parent.Variables.ContainsKey(rfr)) {
+                        //Is parent variable in loop/if-clause
+                        vars.Push(Parent.Variables[rfr]);
                     }
                     else if(CoreStructures.BuiltinVariables.ContainsKey(rfr)) {
                         //Is global variable, push var ref
@@ -151,6 +179,11 @@ namespace Jay.VTS.Execution
                             //error: can't change this reference
                             throw new VTSException("ReferenceError", this, "Cannot assign to <this> because it's read-only.", null);
                         }
+                        else if(IsCopyFrame && Parent.Variables.ContainsKey(operand1.Name)) {
+                            //update in parent, in if or while
+                            Parent.Variables[operand1.Name] = operand2;
+                            operand2.Name = operand1.Name;
+                        }
                         else if(CoreStructures.BuiltinVariables.ContainsKey(operand1.Name)) {
                             //error: cannot change global constants
                             throw new VTSException("ReferenceError", this, "Cannot assign to global constant <" +
@@ -171,10 +204,12 @@ namespace Jay.VTS.Execution
                         else if(Variables.ContainsKey(operand1.Name)) {
                             //update in frame
                             Variables[operand1.Name] = operand2;
+                            operand2.Name = operand1.Name;
                         }
                         else {
                             //add in frame
                             Variables[operand1.Name] = operand2;
+                            operand2.Name = operand1.Name;
                         }
                     }
                     else {
@@ -258,6 +293,14 @@ namespace Jay.VTS.Execution
                     else if(x.Value.Class.Name == null) { Logger.Log("(unnamed class type)"); }
                     else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name); }
                 });
+                if(IsCopyFrame && Parent.Variables != null) {
+                    Parent.Variables.ForEach(x => {
+                        if(x.Value == null) { Logger.Log("(null/empty variable)"); }
+                        else if(x.Value.Class == null) { Logger.Log("(typeless variable)"); }
+                        else if(x.Value.Class.Name == null) { Logger.Log("(unnamed class type)"); }
+                        else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name); }
+                    });
+                }
                 CoreStructures.BuiltinVariables.ForEach(x => { 
                     if(x.Value == null) { Logger.Log(x.Key + ": (null/empty variable)"); }
                     else if(x.Value.Class == null) { Logger.Log(x.Key + ": (typeless variable)"); }

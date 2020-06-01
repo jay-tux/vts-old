@@ -44,6 +44,9 @@ namespace Jay.VTS.Structures
 
         public VTSVariable Call(LineElement action, StackFrame frame, VTSVariable other) 
         {
+            Logger.Log("Trying to run:" + action.ToOneliner());
+            Logger.Log("Bool operators: ");
+            CoreStructures.VTSBool.Operators.Keys.ForEach(x => Logger.Log(x));
             if(Class.Operators.ContainsKey((VTSOperator)action)) {
                 VTSAction toRun = Class.Operators[(VTSOperator)action];
                 if(toRun.IsInternalCall) {
@@ -85,7 +88,7 @@ namespace Jay.VTS.Structures
             }
             else {
                 throw new VTSException("NameError", frame, "Class " + Class.Name + 
-                    " doesn't have an operator " + action, null);
+                    " doesn't have an operator " + (VTSOperator)action, null);
             }
         }
 

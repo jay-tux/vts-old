@@ -1,4 +1,5 @@
 using System;
+using Jay.Xtend;
 using Jay.VTS.Execution;
 using Jay.VTS.Structures;
 using System.Collections.Generic;
@@ -8,7 +9,6 @@ namespace Jay.VTS.Structures
     public static class CoreStructures
     {
         #region builtin classes
-        #region Core Class
         public static VTSClass CoreClass = new VTSClass() {
             Name = "Core", Actions = new Dictionary<string, VTSAction>(),
             Fields = new Dictionary<string, string>(){
@@ -40,11 +40,26 @@ namespace Jay.VTS.Structures
                         Class = VTSString, Mutable = false, 
                         Fields = new Dictionary<string, object>() { ["value"] = "core" }
                     };
+                }),
+                ["vardump"] = ((caller, args, frame) => {
+                    if(args.Count != 0) 
+                        throw VTSException.ArgCountException("core", "vardump", 0, (uint)args.Count, frame);
+                    Console.WriteLine("\n ==== Global Variables: ====");
+                    BuiltinVariables.Keys.ForEach(x => Console.WriteLine(x + "-> " + BuiltinVariables[x].ToString(frame)));
+                    Console.WriteLine(" ==== Scope  Variables: ====");
+                    frame.Variables.Keys.ForEach(x => Console.WriteLine(x + "-> " + frame.Variables[x].ToString(frame)));
+                    Console.WriteLine(" ==== Stack Frame Dump: ====");
+                    StackFrame temp = frame;
+                    while(temp != null) {
+                        Console.WriteLine("^-> " + temp.Pointer.File + "#" + temp.Pointer.Lineno + ": " + temp.Pointer.Line);
+                        temp = temp.Parent;
+                    }
+                    Console.WriteLine(" ====  End  of  Dump  ====\n");
+                    return Void;
                 })
             }
         };
-        #endregion
-        #region Void Class
+        
         public static VTSClass VoidClass = new VTSClass() {
             Name = "Void", Actions = new Dictionary<string, VTSAction>(),
             Fields = new Dictionary<string, string>(), Operators = new Dictionary<VTSOperator, VTSAction>(),
@@ -60,8 +75,7 @@ namespace Jay.VTS.Structures
             }
         };
         #endregion
-        #endregion
-
+        
         #region Primitives
         public static VTSClass VTSInt = new VTSClass() {
             Name = "int", Actions = new Dictionary<string, VTSAction>(),
@@ -293,19 +307,6 @@ namespace Jay.VTS.Structures
                         else throw VTSException.OperatorException(var1, var2, VTSOperator.DIVIDE, frame);
                     }
                 },
-                [VTSOperator.MODULUS] = new VTSAction() { Name = VTSOperator.MODULUS.Name, IsInternalCall = true,
-                    InternalCall = (var1, var2, frame) => { 
-                        if(var1.Class == VTSFloat && var2.Class == VTSFloat)  
-                            return new VTSVariable() {
-                                Class = VTSFloat,
-                                Mutable = false,
-                                Fields = new Dictionary<string, object>() {
-                                    ["value"] = (float)var1.Fields["value"] % (float)var2.Fields["value"]
-                                }
-                            };
-                        else throw VTSException.OperatorException(var1, var2, VTSOperator.MODULUS, frame);
-                    }
-                },
                 [VTSOperator.EQUALS] = new VTSAction() { Name = VTSOperator.EQUALS.Name, IsInternalCall = true,
                     InternalCall = (var1, var2, frame) => { 
                         if(var1.Class == VTSFloat && var2.Class == VTSFloat)  
@@ -376,28 +377,37 @@ namespace Jay.VTS.Structures
             Operators = new Dictionary<VTSOperator, VTSAction>() {
                 [VTSOperator.AND] = new VTSAction() { Name = VTSOperator.AND.Name, IsInternalCall = true,
                     InternalCall = (var1, var2, frame) => {
-                        if(var1.Class == VTSBool && var2.Class == VTSBool)  
-                            return new VTSVariable() {
+                        if(var1.Class == VTSBool && var2.Class == VTSBool) 
+                            return (bool)var1.Fields["value"] && (bool)var2.Fields["value"] ? True() : False(); 
+                            /*return new VTSVariable() {
                                 Class = VTSBool,
                                 Mutable = false,
                                 Fields = new Dictionary<string, object>() {
                                     ["value"] = (bool)var1.Fields["value"] && (bool)var2.Fields["value"]
                                 }
-                            }; 
+                            }; */
                         else throw VTSException.OperatorException(var1, var2, VTSOperator.AND, frame);
                     }
                 },
                 [VTSOperator.OR] = new VTSAction() { Name = VTSOperator.OR.Name, IsInternalCall = true,
                     InternalCall = (var1, var2, frame) => {
-                        if(var1.Class == VTSBool && var2.Class == VTSBool)  
-                            return new VTSVariable() {
+                        if(var1.Class == VTSBool && var2.Class == VTSBool)
+                            return (bool)var1.Fields["value"] || (bool)var2.Fields["value"] ? True() : False();
+                            /*return new VTSVariable() {
                                 Class = VTSBool,
                                 Mutable = false,
                                 Fields = new Dictionary<string, object>() {
                                     ["value"] = (bool)var1.Fields["value"] || (bool)var2.Fields["value"]
                                 }
-                            }; 
+                            }; */
                         else throw VTSException.OperatorException(var1, var2, VTSOperator.OR, frame);
+                    }
+                },
+                [VTSOperator.EQUALS] = new VTSAction() { Name = VTSOperator.EQUALS.Name, IsInternalCall = true,
+                    InternalCall = (var1, var2, frame) => {
+                        if(var1.Class == VTSBool && var2.Class == VTSBool)
+                            return (bool)var1.Fields["value"] == (bool)var2.Fields["value"] ? True() : False();
+                        else throw VTSException.OperatorException(var1, var2, VTSOperator.EQUALS, frame);
                     }
                 }
             },
@@ -435,12 +445,12 @@ namespace Jay.VTS.Structures
             Class = CoreClass, Mutable = false, Fields = new Dictionary<string, object>(), Name = "core"
         };
 
-        public static VTSVariable False = new VTSVariable() {
+        public static VTSVariable False() => new VTSVariable() {
             Class = VTSBool, Mutable = false, Fields = new Dictionary<string, object>() { ["value"] = false },
             Name = "false"
         };
 
-        public static VTSVariable True = new VTSVariable() {
+        public static VTSVariable True() => new VTSVariable() {
             Class = VTSBool, Mutable = false, Fields = new Dictionary<string, object>() { ["value"] = true },
             Name = "true"
         };
@@ -448,7 +458,7 @@ namespace Jay.VTS.Structures
 
         #region Containers
         public static Dictionary<string, VTSVariable> BuiltinVariables = new Dictionary<string, VTSVariable>() {
-            ["void"] = Void, ["core"] = Core, ["false"] = CoreStructures.False, ["true"] = CoreStructures.True
+            ["void"] = Void, ["core"] = Core//, ["false"] = CoreStructures.False, ["true"] = CoreStructures.True
         };
 
         public static Dictionary<string, VTSClass> BuiltinClasses = new Dictionary<string, VTSClass>() { 

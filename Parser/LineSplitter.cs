@@ -12,7 +12,7 @@ namespace Jay.VTS.Parser
         public CodeBlock Target;
         public (string, int) Location;
         public static List<string> Control = new List<string>(){
-            "if", "else", "elseif", "while", "for"
+            "if", "else", /*"elseif",*/ "while", //"for"
         };
         /*public static List<string> Operator = new List<string>(){
             "=", "==", /*"+=", "*=", "-=", "/=", "%=", "*", "-", "+", "*", "/", "%", /*"!=", "~", 

@@ -12,8 +12,34 @@ namespace Jay.VTS.Execution
 {
     public class BlockParse
     {
-        public static Expression ParseSingleBlock(StackFrame frame, CodeBlock block) {
+        public static Expression ParseSingleBlock(StackFrame frame, LineElement block) {
             try {
+                Logger.Log("Parsing block: ");
+                Logger.Log(block.ToOneliner());
+                Expression parse = SplitExpression.ToPostFix(block);
+                parse = SplitExpression.Split((LineElement)parse, out uint _);
+                Logger.Log("==== RESULT ====");
+                Logger.Log(parse);
+                return parse;
+            }
+            catch(VTSException vtse) {
+                frame.Crash(new FrameEventArgs() {
+                    ExitCode = FrameEventArgs.Exits.CodeException,
+                    Error = vtse
+                });
+                return null;
+            }
+            catch(Exception e) {
+                frame.Crash(new FrameEventArgs(){
+                    ExitCode = FrameEventArgs.Exits.InternalException,
+                    InternalError = e.Message
+                });
+                return null;
+            }
+        }
+        public static Expression ParseSingleBlock(StackFrame frame, CodeBlock block) 
+            => ParseSingleBlock(frame, block.Split);
+            /*try {
                 Logger.Log("Parsing block: ");
                 Logger.Log(block.ToString(1));
                 Expression parse = SplitExpression.ToPostFix(block.Split);
@@ -36,6 +62,6 @@ namespace Jay.VTS.Execution
                 });
                 return null;
             }
-       }
+       }*/
     }
 }
