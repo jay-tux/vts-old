@@ -428,19 +428,21 @@ namespace Jay.VTS.Structures
 
         #region builtin constants
         public static VTSVariable Void = new VTSVariable() {
-            Class = VoidClass, Mutable = false, Fields = new Dictionary<string, object>()
+            Class = VoidClass, Mutable = false, Fields = new Dictionary<string, object>(), Name = "void"
         };
 
         public static VTSVariable Core = new VTSVariable() {
-            Class = CoreClass, Mutable = false, Fields = new Dictionary<string, object>()
+            Class = CoreClass, Mutable = false, Fields = new Dictionary<string, object>(), Name = "core"
         };
 
         public static VTSVariable False = new VTSVariable() {
-            Class = VTSBool, Mutable = false, Fields = new Dictionary<string, object>() { ["value"] = false }
+            Class = VTSBool, Mutable = false, Fields = new Dictionary<string, object>() { ["value"] = false },
+            Name = "false"
         };
 
         public static VTSVariable True = new VTSVariable() {
-            Class = VTSBool, Mutable = false, Fields = new Dictionary<string, object>() { ["value"] = false }
+            Class = VTSBool, Mutable = false, Fields = new Dictionary<string, object>() { ["value"] = true },
+            Name = "true"
         };
         #endregion
 

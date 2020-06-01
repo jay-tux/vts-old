@@ -32,6 +32,8 @@ namespace Jay.VTS
 		public static VTSException ArgCountException(string Class, string Method, uint req, uint given, StackFrame frame)
 			=> new VTSException("ArgumentError", frame, "Action " + Class + "." + Method + " requires " + req + 
 				" arguments, " + given + " given.", null);
+		public static VTSException NullRef(string name, StackFrame frame)
+			=> new VTSException("NullReferenceError", frame, "The type or identifier <" + name + "> is not defined.", null);
 
 		private string GenTrace(StackFrame Stack)
 		{

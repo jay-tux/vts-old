@@ -17,19 +17,19 @@ namespace Jay.VTS.Execution
             else if(int.TryParse(Literal, out int intval)) return new VTSVariable() {
                 Class = CoreStructures.VTSInt, Mutable = false, Fields = new Dictionary<string, object>() {
                     ["value"] = intval
-                }
+                }, Name = "_litInt"
             };
             //float literal; return as ref
             else if(float.TryParse(Literal, out float floatval)) return new VTSVariable() {
                 Class = CoreStructures.VTSFloat, Mutable = false, Fields = new Dictionary<string, object>() {
                     ["value"] = floatval
-                }
+                }, Name = "_litFloat"
             };
             //string literal; return as ref
             else return new VTSVariable() {
                 Class = CoreStructures.VTSString, Mutable = false, Fields = new Dictionary<string, object>() {
                     ["value"] = Literal.Replace("\\n", "\n").Replace("\\t", "\t").Replace("\\r", "\r")
-                }
+                }, Name = "_litString"
             };
         }
     }

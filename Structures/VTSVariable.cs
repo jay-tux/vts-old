@@ -1,5 +1,6 @@
 using Jay.VTS.Structures;
 using Jay.VTS.Execution;
+using Jay.VTS.Parser;
 using System.Collections.Generic;
 
 namespace Jay.VTS.Structures
@@ -10,6 +11,10 @@ namespace Jay.VTS.Structures
         public bool Mutable;
         public bool IsTypeRef = false;
         public Dictionary<string, object> Fields;
+        public string Name;
+        public static VTSVariable UNDEFINED(string name) => new VTSVariable() {
+            Class = null, Mutable = false, IsTypeRef = false, Name = name
+        };
 
         public override string ToString() => "~>" + (Class == null ? "(typeless)" : Class.Name);
 
@@ -34,6 +39,53 @@ namespace Jay.VTS.Structures
             }
         }
 
+        public VTSVariable Call(LineElement action, StackFrame frame, VTSVariable other) 
+        {
+            if(Class.Operators.ContainsKey((VTSOperator)action)) {
+                VTSAction toRun = Class.Operators[(VTSOperator)action];
+                if(toRun.IsInternalCall) {
+                    //internal call: pass variables and frame, return result
+                    return toRun.InternalCall(this, other, frame);
+                }
+                else {
+                    //non internal call: prepare action call
+                    //prepare new stackframe
+                    StackFrame sf = new StackFrame(toRun.Instructions, 0){
+                        Parent = frame,
+                        Variables = new Dictionary<string, VTSVariable>() {
+                            ["this"] = this,
+                            ["other"] = other
+                        },
+                        ParentClass = Class
+                    };
+                    VTSVariable result = null;
+                    //hook event
+                    sf.StackFrameReturns += (src, res) => {
+                        switch(res.ExitCode) {
+                            case FrameEventArgs.Exits.ReturnValue: 
+                                //set return value
+                                result = res.ReturnValue; 
+                                break;
+                            case FrameEventArgs.Exits.Return: 
+                                //no return value
+                                result = CoreStructures.Void;
+                                break;
+                            case FrameEventArgs.Exits.InternalException:
+                            case FrameEventArgs.Exits.CodeException: 
+                                //error; crash
+                                frame.Crash(res);
+                                break;
+                        }
+                    };
+                    return result;
+                }
+            }
+            else {
+                throw new VTSException("NameError", frame, "Class " + Class.Name + 
+                    " doesn't have an operator " + action, null);
+            }
+        }
+
         public VTSVariable Call(string action, StackFrame frame, List<VTSVariable> args) 
         {
             if(Class.Actions.ContainsKey(action)) {
@@ -48,10 +100,11 @@ namespace Jay.VTS.Structures
                 }
                 StackFrame sf = new StackFrame(Class.Actions[action].Instructions, 0){ 
                     Parent = frame,
-                    Variables = new Dictionary<string, VTSVariable>(),
+                    Variables = new Dictionary<string, VTSVariable>(){
+                        ["this"] = this
+                    },
                     ParentClass = Class
                 };
-                sf.Variables["this"] = this;
                 for(int i = 0; i < args.Count; i++) {
                     sf.Variables[Class.Actions[action].ArgNames[i]] = args[i];
                 }

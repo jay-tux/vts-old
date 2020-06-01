@@ -58,11 +58,21 @@ namespace Jay.VTS.Execution
         }
 
         public void Execute() {
-            //Console.WriteLine("Currently at: " + (string)Pointer);
-            Interpreter.Instance.PrintAll();
-            PrintScope();
-            RunExpression(BlockParse.ParseSingleBlock(this, Pointer));
-            PrintScope();
+            try {
+                Console.WriteLine("Currently at: " + (string)Pointer);
+                Interpreter.Instance.PrintAll();
+                PrintScope();
+                bool finished = false;
+                //while(!finished && index < )
+                RunExpression(BlockParse.ParseSingleBlock(this, Pointer));
+                PrintScope();
+            }
+            catch(VTSException vtse) {
+                Crash(new FrameEventArgs() {
+                    ExitCode = FrameEventArgs.Exits.CodeException,
+                    Error = vtse
+                });
+            }
         }
 
         private void RunExpression(Expression e) {
@@ -89,8 +99,9 @@ namespace Jay.VTS.Execution
                     }
                     else {
                         //Is null reference
-                        throw new VTSException("NameError", this, 
-                            "The type or identifier " + rfr + " is not defined.", null);
+                        vars.Push(VTSVariable.UNDEFINED(rfr));
+                        /*throw new VTSException("NameError", this, 
+                            "The type or identifier " + rfr + " is not defined.", null);*/
                     }
                 }
                 else if(content.Type == ElementType.Literal) {
@@ -101,7 +112,57 @@ namespace Jay.VTS.Execution
                 else if(content.Type == ElementType.Operator) {
                     Logger.Log("  -> Encountered Operator; popping operands (2)");
                     //pop 2 vars from stack
+                    if(vars.Count < 2) {
+                        throw new VTSException("ArgumentError", this,
+                            "Unable to pop all the required arguments to call <" + content.Content + ">", null);
+                    }
+                    VTSVariable operand2 = vars.Pop();
+                    VTSVariable operand1 = vars.Pop();
                     //try to run operator
+                    if((VTSOperator)content == VTSOperator.ASSIGN) {
+                        //special case: assignment (can be null)
+                        if(operand1.Name == "this") {
+                            //error: can't change this reference
+                            throw new VTSException("ReferenceError", this, "Cannot assign to <this> because it's read-only.", null);
+                        }
+                        else if(CoreStructures.BuiltinVariables.ContainsKey(operand1.Name)) {
+                            //error: cannot change global constants
+                            throw new VTSException("ReferenceError", this, "Cannot assign to global constant <" +
+                                operand1.Name + "> because it's read-only", null);
+                        }
+                        //iffy/incorrect: operand1 contains name of field, not a ref to object.
+                        /*else if(operand1.Class.Fields.ContainsKey(operand1.Name)) {
+                            if(operand1.Mutable) {
+                                //mutable: change field
+                                UPDATEDNAME.Fields[operand1.Name] = operand2;
+                            }
+                            else {
+                                //error: can't change immutable value
+                                throw new VTSException("ReferenceError", this, "Cannot assign to immutable variable <" +
+                                    UPDATEDNAME + ">", null);
+                            }
+                        }*/
+                        else if(Variables.ContainsKey(operand1.Name)) {
+                            //update in frame
+                            Variables[operand1.Name] = operand2;
+                        }
+                        else {
+                            //add in frame
+                            Variables[operand1.Name] = operand2;
+                        }
+                    }
+                    else {
+                        //normal case, call
+                        if(operand1.Class == null) {
+                            throw VTSException.NullRef(operand1.Name, this);
+                        }
+                        else if(operand2.Class == null) {
+                            throw VTSException.NullRef(operand2.Name, this);
+                        }
+                        VTSVariable result = operand1.Call(content, this, operand2);
+                        //push on stack
+                        vars.Push(result);
+                    }
                     //push result
                 }
                 else if(content.Type == ElementType.Member) {
@@ -112,9 +173,11 @@ namespace Jay.VTS.Execution
                         if(vars.Count == 0) {
                             //not enough args
                             throw new VTSException("ArgumentError", this, 
-                                "Unable tot pop all the required arguments to call <" + content.Content + ">", null);
+                                "Unable to pop all the required arguments to call <" + content.Content + ">", null);
                         }
-                        args.Insert(0, vars.Pop());
+                        VTSVariable popped = vars.Pop();
+                        if(popped.Class == null) throw VTSException.NullRef(popped.Name, this);
+                        args.Insert(0, popped);
                     }
 
                     //try popping caller
@@ -124,6 +187,7 @@ namespace Jay.VTS.Execution
                             "Unable to pop all the required arguments to call <" + content.Content + ">", null);
                     }
                     VTSVariable caller = vars.Pop();
+                    if(caller.Class == null) throw VTSException.NullRef(caller.Name, this);
                     Logger.Log("    -> Popped arguments, caller is " + caller.ToString());
                     Logger.Log("    -> Arguments are (in order): ");
                     args.ForEach(x => Logger.Log("      -> " + x.ToString()));
@@ -134,7 +198,8 @@ namespace Jay.VTS.Execution
                     vars.Push(result);
                 }
                 else {
-                    //error
+                    throw new VTSException("ExpressionError", this, "Only Identifiers, Literals, Operators and Calls " +
+                        "are allowed in an Expression.", null);
                 }
                 Logger.Log("  ----------- Current Stack: ----------");
                 vars.ToArray().ForEach(x => Logger.Log(" ^: " + x.ToString()));
