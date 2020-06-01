@@ -19,10 +19,35 @@ namespace Jay.VTS.Execution
         public Dictionary<string, VTSVariable> Variables;
         public VTSClass ParentClass;
 
-        public StackFrame(CodeBlock Root) {
+        /*public StackFrame(CodeBlock Root) {
             this.Root = Root;
+            Logger.Log("        ==== INITIALIZING DEFAULT STACKFRAME ====       ");
+            Logger.Log((string)Root);
+            Logger.Log("        ==== DEFAULT STACKFRAME INITIALIZED  ====       ");
             FindEntry(this.Root);
             this.Variables = new Dictionary<string, VTSVariable>();
+        }*/
+
+        public static StackFrame FindEntry(CodeBlock master) 
+        {
+            //search entry (recursively) in file/root blocks
+            if(master.Type == "root" || master.Type == "file") {
+                bool found = false;
+                StackFrame result = null;
+                for(int i = 0; i < master.Contents.Count && !found; i++) {
+                    result = FindEntry(master.Contents[i]);
+                    if(result != null) {
+                        found = true;
+                    }
+                }
+                return result;
+            }
+            else if(master.Type == "entry") {
+                //create stackframe
+                StackFrame rootFrame = new StackFrame(master, 0);
+                return rootFrame;
+            }
+            return null;
         }
 
         public StackFrame(CodeBlock Root, int EntryIndex) {
@@ -36,7 +61,7 @@ namespace Jay.VTS.Execution
 
         public void AddHandler(EventHandler<FrameEventArgs> handler) => StackFrameReturns += handler;
 
-        private void FindEntry(CodeBlock Target) {
+        /*private void FindEntry(CodeBlock Target) {
             if(Target.Contents != null) {
                 Target.Contents.ForEach(x => {
                     if(x.Type == "file" || x.Type == "root") {
@@ -55,7 +80,7 @@ namespace Jay.VTS.Execution
             if(Target == Root && Pointer == null) {
                 throw new VTSException("NoEntryError", this, "VTS-Entry is not set.", null);
             }
-        }
+        }*/
 
         public void Execute() {
             try {

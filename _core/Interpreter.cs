@@ -116,7 +116,7 @@ namespace Jay.VTS
 			Logger.Log("");
 			Root.Contents.ForEach(fil => Logger.Log(fil.ToParentString(0) + "\n"));
 			//Console.WriteLine(" ------ ");
-			StackFrame rootFrame = new StackFrame(Root);
+			StackFrame rootFrame = StackFrame.FindEntry(Root);
 			rootFrame.StackFrameReturns += (src, args) => {
 				switch(args.ExitCode) {
 					case FrameEventArgs.Exits.Return:
