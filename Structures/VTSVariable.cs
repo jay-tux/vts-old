@@ -1,6 +1,9 @@
 using Jay.VTS.Structures;
 using Jay.VTS.Execution;
 using Jay.VTS.Parser;
+using Jay.Logging;
+using System.Linq;
+using Jay.Xtend;
 using System.Collections.Generic;
 
 namespace Jay.VTS.Structures
@@ -88,11 +91,27 @@ namespace Jay.VTS.Structures
 
         public VTSVariable Call(string action, StackFrame frame, List<VTSVariable> args) 
         {
-            if(Class.Actions.ContainsKey(action)) {
-                //INTERNAL CALL IS OPERATOR ONLY
-                /*if(Class.Actions[action].IsInternalCall) {
-                    return Class.Actions[action].InternalCall(this, args, frame);
-                }*/
+            Logger.Log(" ======= Call  details: ======");
+            Logger.Log("Action = " + action);
+            Logger.Log("Args = " + string.Join(", ", args.Select(x => x.Class)));
+            Logger.Log("Caller = " + Class);
+            if(Fields != null) Fields.Keys.ForEach(x => Logger.Log("  [" + x + "] = [" + Fields[x] + "]"));
+            Logger.Log(" ======= End of details ======");
+            if(IsTypeRef) {
+                //special case: static action aka constructor
+                if(action == "new") {
+                    Logger.Log("Trying to execute constructor...");
+                    //execute constructor, return result
+                    return Class.Create(frame, args);
+                }
+                else {
+                    //throw exception: only constructor is static call
+                    throw new VTSException("ActionError", frame, "Action <" + action + "> is only accessible from" +
+                        " an instance, not from a class reference.", null);
+                }
+            }
+            else if(Class.Actions.ContainsKey(action)) {
+                Logger.Log("Trying to execute non-internal action...");
                 if(Class.Actions[action].ArgNames.Count != args.Count) {
                     throw new VTSException("ArgumentError", frame, "Action <" + Class.Name + "." + action + 
                         "> expects " + Class.Actions[action].ArgNames.Count + " arguments, " + args.Count + " given.",
@@ -112,20 +131,25 @@ namespace Jay.VTS.Structures
                 sf.StackFrameReturns += (src, res) => {
                     switch(res.ExitCode) {
                         case FrameEventArgs.Exits.ReturnValue: 
+                            Logger.Log("Exited with return value");
                             result = res.ReturnValue; 
                             break;
                         case FrameEventArgs.Exits.Return: 
+                            Logger.Log("Exited without return value");
                             result = CoreStructures.Void;
                             break;
                         case FrameEventArgs.Exits.InternalException:
                         case FrameEventArgs.Exits.CodeException: 
+                            Logger.Log("Crashed due to error");
                             frame.Crash(res);
                             break;
                     }
                 };
+                sf.Execute();
                 return result;
             }
             else if(Class.Internals.ContainsKey(action)) {
+                Logger.Log("Trying to execute internal action...");
                 return Class.Internals[action](this, args, frame);
             }
             else {

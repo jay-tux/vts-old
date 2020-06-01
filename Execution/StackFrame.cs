@@ -18,6 +18,7 @@ namespace Jay.VTS.Execution
         public event EventHandler<FrameEventArgs> StackFrameReturns;
         public Dictionary<string, VTSVariable> Variables;
         public VTSClass ParentClass;
+        protected VTSVariable TempValue;
 
         public static StackFrame FindEntry(CodeBlock master) 
         {
@@ -44,8 +45,9 @@ namespace Jay.VTS.Execution
         public StackFrame(CodeBlock Root, int EntryIndex) {
             this.Root = Root;
             this.Index = EntryIndex;
-            Pointer = Root.Contents[EntryIndex];
+            //Pointer = Root.Contents[EntryIndex];
             this.Variables = new Dictionary<string, VTSVariable>();
+            TempValue = CoreStructures.Void;
         }
 
         public void Crash(FrameEventArgs eventArgs) => OnStackFrameReturns(eventArgs);
@@ -54,13 +56,42 @@ namespace Jay.VTS.Execution
 
         public void Execute() {
             try {
-                Console.WriteLine("Currently at: " + (string)Pointer);
+                //Console.WriteLine("Currently at: " + (string)Pointer);
                 Interpreter.Instance.PrintAll();
                 PrintScope();
                 bool finished = false;
-                //while(!finished && index < )
-                RunExpression(BlockParse.ParseSingleBlock(this, Pointer));
+                FrameEventArgs args = new FrameEventArgs() { ExitCode = FrameEventArgs.Exits.Return };
+                while(!finished && Index < Root.Contents.Count) {
+                    Pointer = Root.Contents[Index];
+                    Logger.Log(" ------ Index: " + Index + "; CodeBlock: " + (string)Pointer + " ------ ");
+                    if(Pointer.Split.Inner.Count > 0) {
+                        //Is nonempty
+                        LineElement lead = Pointer.Split.Inner[0];
+                        switch(lead.Type) {
+                            case ElementType.Control:
+                                //control elements: uses inner blocks (complicated stuff...)
+                                Logger.Log("Ewww, control elements, REEEEE");
+                                break;
+                            case ElementType.Return:
+                                //return; set expression value as return value and stop execution.
+                                Logger.Log("StackFrame finished with return call.");
+                                finished = true;
+                                RunExpression(BlockParse.ParseSingleBlock(this, Pointer));
+                                args.ExitCode = FrameEventArgs.Exits.ReturnValue;
+                                args.ReturnValue = TempValue;
+                                break;
+                            default:
+                                //other kinds; evaluate expression
+                                RunExpression(BlockParse.ParseSingleBlock(this, Pointer));
+                                break;
+                        }
+                    }
+                    //else: empty expression; move on
+                    Index++;
+                }
+                //RunExpression(BlockParse.ParseSingleBlock(this, Pointer));
                 PrintScope();
+                OnStackFrameReturns(args);
             }
             catch(VTSException vtse) {
                 Crash(new FrameEventArgs() {
@@ -71,13 +102,13 @@ namespace Jay.VTS.Execution
         }
 
         private void RunExpression(Expression e) {
-            Logger.Log(" == Running Expression " + e.ToString() + " ==");
             if(e == null) return;
-            if(!e.IsBlock) throw new VTSException("ParseError", this, "Expression should be a block type.", null);
+            Logger.Log(" == Running Expression " + e.ToString() + " ==");if(!e.IsBlock) throw new VTSException("ParseError", this, "Expression should be a block type.", null);
             Stack<VTSVariable> vars = new Stack<VTSVariable>();
             foreach(Expression sub in e.Block) {
                 LineElement content = sub.Content;
-                if(content.Type == ElementType.Identifier) {
+                if(content.Type == ElementType.Return) { /*skip return*/ }
+                else if(content.Type == ElementType.Identifier) {
                     Logger.Log("  -> Encountered Identifier; pushing");
                     string rfr = content.Content;
                     if(Interpreter.Instance.ContainsClass(rfr)) {
@@ -161,7 +192,7 @@ namespace Jay.VTS.Execution
                     //push result
                 }
                 else if(content.Type == ElementType.Member) {
-                    Logger.Log("  -> Encountered Member; popping values (" + sub.ArgCount + ") and caller");
+                    Logger.Log("  -> Encountered Member <" + content.Content + ">; popping values (" + sub.ArgCount + ") and caller");
                     //Try popping args
                     List<VTSVariable> args = new List<VTSVariable>();
                     for(int i = 0; i < sub.ArgCount; i++) {
@@ -185,9 +216,11 @@ namespace Jay.VTS.Execution
                     if(caller.Class == null) throw VTSException.NullRef(caller.Name, this);
                     Logger.Log("    -> Popped arguments, caller is " + caller.ToString());
                     Logger.Log("    -> Arguments are (in order): ");
-                    args.ForEach(x => Logger.Log("      -> " + x.ToString()));
+                    if(args.Count == 0) Logger.Log("      -> (no args)");
+                    else args.ForEach(x => Logger.Log("      -> " + x.ToString()));
                     //call method
                     VTSVariable result = caller.Call(content.Content, this, args);
+                    if(result == null) Logger.Log("Somehow, we didn't get a result?");
                     Logger.Log("    -> Result is " + result.ToString());
                     //push result
                     vars.Push(result);
@@ -199,6 +232,12 @@ namespace Jay.VTS.Execution
                 Logger.Log("  ----------- Current Stack: ----------");
                 vars.ToArray().ForEach(x => Logger.Log(" ^: " + x.ToString()));
                 Logger.Log(" ------------                ----------");
+            }
+            if(vars.Count == 1) {
+                TempValue = vars.Pop();
+            }
+            else if(vars.Count > 1) {
+                throw new VTSException("ExpressionError", this, "Unbalanced expression. <" + vars.Count + "> variables too much.", null);
             }
             Logger.Log(" == Finished running Expression ==");
         }
