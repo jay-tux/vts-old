@@ -2,6 +2,9 @@ entry () {
     a = 5;
     while(a > 0) {
         core.stdout(a);
+        if(a > 3) {
+            core.stdout(a);
+        }
         a = a - 1;
     }
     core.stdout("\n");

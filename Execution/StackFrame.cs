@@ -60,6 +60,23 @@ namespace Jay.VTS.Execution
 
         public void AddHandler(EventHandler<FrameEventArgs> handler) => StackFrameReturns += handler;
 
+        public bool HasVar(string name) => 
+            Variables.ContainsKey(name) || CoreStructures.BuiltinVariables.ContainsKey(name) || (IsCopyFrame && Parent.HasVar(name));
+        
+        public VTSVariable GetVariable(string name) =>
+            Variables.ContainsKey(name) ? Variables[name] : 
+                CoreStructures.BuiltinVariables.ContainsKey(name) ? CoreStructures.BuiltinVariables[name] :
+                IsCopyFrame ? Parent.GetVariable(name) : CoreStructures.Void;
+
+        public void SetVariable(string name, VTSVariable newValue) {
+            if(IsCopyFrame && Parent.HasVar(name)) {
+                Parent.SetVariable(name, newValue);
+            }
+            else {
+                Variables[name] = newValue;
+            }
+        }
+
         public void Execute() {
             try {
                 //Console.WriteLine("Currently at: " + (string)Pointer);
@@ -155,17 +172,9 @@ namespace Jay.VTS.Execution
                         //Is class, push class
                         vars.Push(Interpreter.Instance.Classes[rfr].TypeRef);
                     }
-                    else if(Variables.ContainsKey(rfr)) {
+                    else if(HasVar(rfr)) {
                         //Is scope variable, push var ref
-                        vars.Push(Variables[rfr]);
-                    }
-                    else if(IsCopyFrame && Parent.Variables.ContainsKey(rfr)) {
-                        //Is parent variable in loop/if-clause
-                        vars.Push(Parent.Variables[rfr]);
-                    }
-                    else if(CoreStructures.BuiltinVariables.ContainsKey(rfr)) {
-                        //Is global variable, push var ref
-                        vars.Push(CoreStructures.BuiltinVariables[rfr]);
+                        vars.Push(GetVariable(rfr));
                     }
                     else {
                         //Is null reference
@@ -200,11 +209,6 @@ namespace Jay.VTS.Execution
                             //error: can't change this reference
                             throw new VTSException("ReferenceError", this, "Cannot assign to <this> because it's read-only.", null);
                         }
-                        else if(IsCopyFrame && Parent.Variables.ContainsKey(operand1.Name)) {
-                            //update in parent, in if or while
-                            Parent.Variables[operand1.Name] = operand2;
-                            operand2.Name = operand1.Name;
-                        }
                         else if(CoreStructures.BuiltinVariables.ContainsKey(operand1.Name)) {
                             //error: cannot change global constants
                             throw new VTSException("ReferenceError", this, "Cannot assign to global constant <" +
@@ -222,37 +226,17 @@ namespace Jay.VTS.Execution
                                     UPDATEDNAME + ">", null);
                             }
                         }*/
-                        else if(Variables.ContainsKey(operand1.Name)) {
-                            //update in frame
-                            Variables[operand1.Name] = operand2;
-                            if(operand2.Name == null || !Variables.ContainsKey(operand2.Name)) {
-                                operand2.Name = operand1.Name;
-                            }
-                        }
                         else {
                             //add in frame
-                            Variables[operand1.Name] = operand2;
+                            SetVariable(operand1.Name, operand2);
                             if(operand2.Name == null || !Variables.ContainsKey(operand2.Name)) {
                                 operand2.Name = operand1.Name;
                             }
                         }       
-                        if(Variables.ContainsKey(operand1.Name)) {
-                            Logger.Log("Getting result from local vars [" + 
-                                string.Join(", ", Variables.Keys) + "]...");
-                            Logger.Log("Result   : " + Variables[operand1.Name].ToString(this) + "$" + 
-                                (Variables[operand1.Name].Class == null ? "(typeless)" : Variables[operand1.Name].Class.Name) + 
-                                "~'" + Variables[operand1.Name].Name + "'");
-                        }    
-                        else if(Parent.Variables.ContainsKey(operand1.Name)){
-                            Logger.Log("Getting result from parent's vars [" +
-                                string.Join(", ", Parent.Variables.Keys) + "]...");
-                            Logger.Log("Result   : " + Parent.Variables[operand1.Name].ToString(this) + "$" + 
-                                (Parent.Variables[operand1.Name].Class == null ? "(typeless)" : Parent.Variables[operand1.Name].Class.Name) + 
-                                "~'" + Parent.Variables[operand1.Name].Name + "'");
-                        }
-                        else {
-                            Logger.Log("Issue: var " + operand1.Name + " neither in local nor parent's vars...");
-                        }
+                        VTSVariable result = GetVariable(operand1.Name);
+                        Logger.Log("Result   : " + result.ToString(this) + "$" + 
+                            (result.Class == null ? "(typeless)" : result.Class.Name) + 
+                            "~'" + result.Name + "'");
                         Logger.Log("");
                     }
                     else {
@@ -348,13 +332,14 @@ namespace Jay.VTS.Execution
                     else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name); }
                 });
                 if(IsCopyFrame && Parent.Variables != null) {
-                    Logger.Log("^: Inherited Copy variables");
+                    Logger.Log("^: Directly Inherited Copy variables");
                     Parent.Variables.ForEach(x => {
                         if(x.Value == null) { Logger.Log("(null/empty variable)"); }
                         else if(x.Value.Class == null) { Logger.Log("(typeless variable)"); }
                         else if(x.Value.Class.Name == null) { Logger.Log("(unnamed class type)"); }
                         else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name); }
                     });
+                    Logger.Log("^: Indirectly Inherited Copy variables not shown.");
                 }
                 Logger.Log("^: Global variables");
                 CoreStructures.BuiltinVariables.ForEach(x => { 
