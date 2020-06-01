@@ -1,1 +1,1 @@
-mono --debug vts-debug.exe $@
+mono --debug bin/vts-debug.exe $@
