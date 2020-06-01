@@ -34,6 +34,8 @@ namespace Jay.VTS
 				" arguments, " + given + " given.", null);
 		public static VTSException NullRef(string name, StackFrame frame)
 			=> new VTSException("NullReferenceError", frame, "The type or identifier <" + name + "> is not defined.", null);
+		public static VTSException TypeException(VTSClass expected, VTSClass actual, StackFrame frame)
+			=> new VTSException("TypeError", frame, "Expected <" + expected.Name + ">, but got <" + actual.Name + ">", null);
 
 		private string GenTrace(StackFrame Stack)
 		{
