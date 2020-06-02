@@ -10,6 +10,7 @@ namespace Jay.VTS.Execution
         public VTSException Error;
         public string InternalError;
         public VTSVariable ReturnValue;
+        public StackFrame Frame;
 
         public FrameEventArgs() { }
 

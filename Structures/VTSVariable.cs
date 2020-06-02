@@ -92,7 +92,9 @@ namespace Jay.VTS.Structures
 
         public VTSVariable Call(string action, StackFrame frame, List<VTSVariable> args) 
         {
+            Logger.Log("Caller: " + this.Class + "::" + this.IsTypeRef, LogType.NOIGNORE);
             if(IsTypeRef) {
+                Logger.Log("Calling from Type Ref", LogType.DEBUG);
                 //special case: static action aka constructor
                 if(action == "new") {
                     //execute constructor, return result

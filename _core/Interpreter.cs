@@ -114,6 +114,11 @@ namespace Jay.VTS
 			return this;
 		}
 		public Interpreter SecondPass() {
+			//string[] fPath = Parse.File.Split('/');
+			//fPath[fPath.Length - 1] = loadFile;
+			string[] fPath = this.Filename.Split('/');
+			fPath[fPath.Length - 1] = "";
+			Directory.SetCurrentDirectory(string.Join("/", fPath));
 			Root.Contents.ForEach(fil => Logger.Log((string)fil + "\n", LogType.PARSING));
 			Logger.Log("", LogType.PARSING);
 			Root.Contents.ForEach(fil => Logger.Log(fil.ToParentString(0) + "\n", LogType.PARSING));
@@ -136,6 +141,7 @@ namespace Jay.VTS
 					case FrameEventArgs.Exits.InternalException:
 						Console.Error.WriteLine(" ==== An internal error has occured. ==== \nPlease notify the developer of " + 
 							"the following error:\n" + args.InternalError);
+						Console.Error.WriteLine(new VTSException("", args.Frame, "", null).StackTrace);
 						Program.Instance.ExitCode = (int)args.ExitCode;
 						break;
 				}

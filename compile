@@ -36,7 +36,7 @@ if [[ $compile == 'true' ]]; then
 	fi
 	if [[ $debug == 'true' ]]; then
 		echo 'Debug enabled: compiling debug version to bin/vts-debug.exe'
-		mcs -define:VERBOSE -define:EXECUTION -define:MODULE -define:PARSING -define:WARNING -define:STRUCTURAL -define:DEBUG -define:MESSAGE \
+		mcs -debug -define:NOCATCH -define:VERBOSE -define:EXECUTION -define:MODULE -define:PARSING -define:WARNING -define:STRUCTURAL -define:DEBUG -define:MESSAGE \
 			-r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-verbose.exe -main:Jay.VTS.Program *.cs */*.cs
 	fi
 	if [[ $flags != '' ]]; then

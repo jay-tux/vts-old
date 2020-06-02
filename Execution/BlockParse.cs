@@ -32,7 +32,8 @@ namespace Jay.VTS.Execution
             catch(Exception e) {
                 frame.Crash(new FrameEventArgs(){
                     ExitCode = FrameEventArgs.Exits.InternalException,
-                    InternalError = e.Message
+                    InternalError = e.Message,
+                    Frame = frame
                 });
                 return null;
             }

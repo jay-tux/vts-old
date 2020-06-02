@@ -121,6 +121,14 @@ namespace Jay.VTS.Execution
                     Error = vtse
                 });
             }
+            #if !DEBUG
+            catch(Exception e) {
+                Crash(new FrameEventArgs() {
+                    ExitCode = FrameEventArgs.Exits.InternalException,
+                    InternalError = e.Message
+                });
+            }
+            #endif
         }
 
         private void ControlCall(CodeBlock block) 

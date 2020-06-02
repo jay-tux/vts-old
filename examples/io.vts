@@ -1,9 +1,24 @@
 #vts <IO>;
 /*
-    Credits to https://support.spatialkey.com/spatialkey-sample-csv-data/ for their Crimes CSV data set
-        "The Sacramento crime January 2006 file contains 7,584 crime records, as made available by the Sacramento Police Department. 
-        Law enforcement agencies should enjoy working with this dataset."
+    Credits to https://people.sc.fsu.edu/~jburkardt/data/csv/csv.html for the CSV data set in examples/sample.csv
 */
 
 entry () {
+    core.stdout("Currently working in: " + Directory.new("./").getCwd() + "\n");
+    dir = Directory.new("./");
+    lst = dir.getFiles();
+    index = 0;
+    a = lst.count;
+    while(index < a) {
+        core.stdout("Found file: " + lst.get(index) + "\n");
+        index = index + 1;
+    }
+    
+    lst = dir.getDirs();
+    index = 0;
+    a = lst.count;
+    while(index < a) {
+        core.stdout("Found directory: " + lst.get(index) + "\n");
+        index = index + 1;
+    }
 }

@@ -1,0 +1,6 @@
+Type,Mutable,Fields
+int,false,value
+File,false,path
+list,false,(value;count)
+string,false,value
+float,false,value
