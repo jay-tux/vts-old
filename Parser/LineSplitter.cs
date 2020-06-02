@@ -197,6 +197,7 @@ namespace Jay.VTS.Parser
             //current result: [ { lst: Identifier }, { =: Operator }, { list: Identifier }, { new: Member }, [ { : Void } ] ]
             Logger.Log(" ========== Starting rerooting dots on: ========== ");
             Logger.Log(root.ToOneliner());
+            Logger.Log(" ==========    Rerooting operation:     ========== ");
             RerootDots(root);
             Logger.Log(" ==========       Rerooted result:      ========== ");
             Logger.Log(root.ToOneliner());
@@ -209,14 +210,23 @@ namespace Jay.VTS.Parser
             if(root.Type != ElementType.Block) return;
             for(int ind = 0; ind < root.Inner.Count; ind++) {
                 if(root[ind].Type == ElementType.Member) {
-                    if(ind < root.Inner.Count - 1 && root[ind + 1].Type == ElementType.Block) { /*do nothing*/ } 
+                    if(ind < root.Inner.Count - 1 && root[ind + 1].Type == ElementType.Block) { 
+                        Logger.Log("Is actual member [" + root[ind].ToOneliner() + "]");
+                        /*do nothing*/ 
+                    } 
                     else if(ind > 0 && root.Inner[ind - 1].Type == ElementType.Literal) {
+                        Logger.Log("Is literal [" + root[ind].ToOneliner() + "]");
                         root.Inner[ind - 1].Content += "." + root.Inner[ind].Content;
                         root.Inner[ind].Type = ElementType.None;
                     }
                     else {
+                        Logger.Log("Is field [" + root[ind].ToOneliner() + "]");
                         root.Inner[ind].Type = ElementType.Field;
                     }
+                }
+                else if(root[ind].Type == ElementType.Block) {
+                    Logger.Log("Working recursive on block [" + root[ind].ToOneliner() + "]");
+                    RerootDots(root[ind]);
                 }
             }
         }
