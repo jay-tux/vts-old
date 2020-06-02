@@ -69,6 +69,6 @@ namespace Jay.Logging
         }
 
         //public static void Log(object message) => Log(message.ToString());
-        public static void Log(object message, LogType type) => Log(message, type);
+        public static void Log(object message, LogType type) => Log(message.ToString(), type);
     }
 }
