@@ -170,14 +170,17 @@ namespace Jay.VTS.Execution
                     string rfr = content.Content;
                     if(Interpreter.Instance.ContainsClass(rfr)) {
                         //Is class, push class
+                        Logger.Log("            Is Class: pushing type reference.");
                         vars.Push(Interpreter.Instance.Classes[rfr].TypeRef);
                     }
                     else if(HasVar(rfr)) {
                         //Is scope variable, push var ref
+                        Logger.Log("            Is Variable reference.");
                         vars.Push(GetVariable(rfr));
                     }
                     else {
                         //Is null reference
+                        Logger.Log("            Is Nothing, pushing undefined var.");
                         vars.Push(VTSVariable.UNDEFINED(rfr));
                         /*throw new VTSException("NameError", this, 
                             "The type or identifier " + rfr + " is not defined.", null);*/
@@ -283,7 +286,7 @@ namespace Jay.VTS.Execution
                     //call method
                     VTSVariable result = caller.Call(content.Content, this, args);
                     if(result == null) Logger.Log("Somehow, we didn't get a result?");
-                    Logger.Log("    -> Result is " + result.ToString());
+                    else Logger.Log("    -> Result is " + result.ToString());
                     //push result
                     vars.Push(result);
                 }
@@ -293,7 +296,10 @@ namespace Jay.VTS.Execution
                 }
                 Logger.Log("  ----------- Current Stack: ----------");
                 vars.ToArray().ForEach(x => {
-                    if(x.Class == null) {
+                    if(x == null) {
+                        Logger.Log(" ^: Empty stack entry.");
+                    }
+                    else if(x.Class == null) {
                         Logger.Log(" ^: Uninitialized variable: " + x.Name);
                     }
                     else if(x.IsTypeRef) {

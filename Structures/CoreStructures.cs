@@ -87,6 +87,7 @@ namespace Jay.VTS.Structures
         public static VTSClass ListClass = new VTSClass() {
             Name = "list", Actions = new Dictionary<string, VTSAction>(),
             Fields = new Dictionary<string, string>() { ["value"] = "List<T>" },
+            Operators = new Dictionary<VTSOperator, VTSAction>(),
             Internals = new Dictionary<string, Func<VTSVariable, List<VTSVariable>, StackFrame, VTSVariable>>() {
                 ["toString"] = ((caller, args, frame) => {
                     if(args.Count != 0)
@@ -125,10 +126,36 @@ namespace Jay.VTS.Structures
                     if(arg.Class != VTSInt) 
                         throw VTSException.TypeException(VTSInt, arg.Class, frame);
                     if((int)arg.Fields["value"] < 0 || 
-                        (int)arg.Fields["value"] > ((List<VTSVariable>)caller.Fields["value"]).Count)
+                        (int)arg.Fields["value"] >= ((List<VTSVariable>)caller.Fields["value"]).Count)
                         throw new VTSException("RangeError", frame, 
                             "Index " + (int)arg.Fields["value"] + " out of range.", null);
                     return ((List<VTSVariable>)caller.Fields["value"])[(int)arg.Fields["value"]];
+                }),
+                ["set"] = ((caller, args, frame) => {
+                    if(args.Count != 2)
+                        throw VTSException.ArgCountException("list", "get", 1, (uint)args.Count, frame);
+                    VTSVariable index = args[0];
+                    VTSVariable val = args[1];
+                    if(index.Class != VTSInt) throw VTSException.TypeException(VTSInt, index.Class, frame);
+                    if((int)index.Fields["value"] < 0 || 
+                        (int)index.Fields["value"] >= ((List<VTSVariable>)caller.Fields["value"]).Count)
+                        throw new VTSException("RangeError", frame,
+                            "Index " + (int)index.Fields["value"] + " out of range.", null);
+                    ((List<VTSVariable>)caller.Fields["value"])[(int)index.Fields["value"]] = val;
+                    return val;
+                }),
+                ["remove"] = ((caller, args, frame) => {
+                    if(args.Count != 1)
+                        throw VTSException.ArgCountException("list", "remove", 1, (uint)args.Count, frame);
+                    VTSVariable index = args[0];
+                    if(index.Class != VTSInt) throw VTSException.TypeException(VTSInt, index.Class, frame);
+                    if((int)index.Fields["value"] < 0 ||
+                        (int)index.Fields["value"] >= ((List<VTSVariable>)caller.Fields["value"]).Count)
+                        throw new VTSException("RangeError", frame,
+                            "Index " + (int)index.Fields["value"] + " out of range.", null);
+                    VTSVariable res = ((List<VTSVariable>)caller.Fields["value"])[(int)index.Fields["value"]];
+                    ((List<VTSVariable>)caller.Fields["value"]).RemoveAt((int)index.Fields["value"]);
+                    return res;
                 })
             }
         };
@@ -521,7 +548,8 @@ namespace Jay.VTS.Structures
 
         public static Dictionary<string, VTSClass> BuiltinClasses = new Dictionary<string, VTSClass>() { 
             ["Core"] = CoreClass, ["Voidtype"] = VoidClass, 
-            ["int"] = VTSInt, ["string"] = VTSString, ["float"] = VTSFloat, ["bool"] = VTSBool
+            ["int"] = VTSInt, ["string"] = VTSString, ["float"] = VTSFloat, ["bool"] = VTSBool,
+            ["list"] = ListClass
         };
         #endregion
     }

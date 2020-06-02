@@ -1,11 +1,15 @@
 entry () {
-    a = 5;
-    while(a > 0) {
-        core.stdout(a);
-        if(a > 3) {
-            core.stdout(a);
-        }
-        a = a - 1;
+    lst = list.new();
+    lst.add(65);
+    lst.add(true);
+    lst.add(list.new());
+    lst.add("sixty-seven point seventy-two");
+    lst.add(15.5);
+    index = 0;
+    max = lst.count();
+    while(index < max) {
+        core.stdout(lst.get(index)); core.stdout("\n");
+        index = index + 1;
     }
-    core.stdout("\n");
+    core.stdout("FINISHED :D\n");
 }

@@ -31,6 +31,7 @@ namespace Jay.VTS
 				Instance = new Interpreter(file) {
 					Variables = new List<VTSVariable>()
 				};
+				CoreStructures.BuiltinClasses.ForEach(x => Instance.Classes[x.Key] = x.Value);
 			}
 			else {
 				Console.Error.WriteLine(" --> Instance is already set.");
