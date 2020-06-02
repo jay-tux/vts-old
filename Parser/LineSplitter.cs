@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Jay.VTS;
 using Jay.VTS.Enums;
+using Jay.Logging;
 using Jay.VTS.Structures;
 
 namespace Jay.VTS.Parser
@@ -45,10 +46,26 @@ namespace Jay.VTS.Parser
             LineElement pointer = root;
             bool inString = false;
             bool finished = false;
+            bool inComment = false;
             ElementType next = ElementType.None;
             Target.Line.ToCharArray().ToList().ForEach(x => {
                 if(!finished) {
-                    if(inString) {
+                    if(inComment) {
+                        if(x == '/' && currStr.EndsWith("*")) {
+                            inComment = false;
+                            pointer.Inner.Add(new LineElement() {
+                                Type = ElementType.Comment,
+                                Content = currStr,
+                                Inner = null,
+                                Parent = pointer
+                            });
+                            currStr = "";
+                        }
+                        else {
+                            currStr += x;
+                        }
+                    }
+                    else if(inString) {
                         if(x == '"') { 
                             inString = false;
                             pointer.Inner.Add(new LineElement() {
@@ -152,18 +169,12 @@ namespace Jay.VTS.Parser
                         }
                         else {
                             currStr += x;
-                            if(currStr == "//") {
+                            if(currStr == "/*") {
                                 if(next != ElementType.None) {
                                     throw new VTSException("SyntaxError", "firstPass::line", 
                                         $"Unexpected <comment> in <{Location.Item1}> on line <{Location.Item2}>, expected <field> or <action>");
                                 }
-                                pointer.Inner.Add(new LineElement(){
-                                    Type = ElementType.Comment,
-                                    Content = "",
-                                    Inner = null,
-                                    Parent = pointer
-                                });
-                                finished = true;
+                                inComment = true;
                             }
                         }
                     }
@@ -183,7 +194,31 @@ namespace Jay.VTS.Parser
                 throw new VTSException("SyntaxError", "fistPass::line", 
                     $"Unexpected ';' in <{Location.Item1}> on line <{Location.Item2}>, expected ')'");
             }
+            //current result: [ { lst: Identifier }, { =: Operator }, { list: Identifier }, { new: Member }, [ { : Void } ] ]
+            Logger.Log(" ========== Starting rerooting dots on: ========== ");
+            Logger.Log(root.ToOneliner());
+            RerootDots(root);
+            Logger.Log(" ==========       Rerooted result:      ========== ");
+            Logger.Log(root.ToOneliner());
             return root;
+            //return RerootDots(root);
+            //return root;
+        }
+
+        private void RerootDots(LineElement root) {
+            if(root.Type != ElementType.Block) return;
+            for(int ind = 0; ind < root.Inner.Count; ind++) {
+                if(root[ind].Type == ElementType.Member) {
+                    if(ind < root.Inner.Count - 1 && root[ind + 1].Type == ElementType.Block) { /*do nothing*/ } 
+                    else if(ind > 0 && root.Inner[ind - 1].Type == ElementType.Literal) {
+                        root.Inner[ind - 1].Content += "." + root.Inner[ind].Content;
+                        root.Inner[ind].Type = ElementType.None;
+                    }
+                    else {
+                        root.Inner[ind].Type = ElementType.Field;
+                    }
+                }
+            }
         }
 
         private ElementType DetermineType(string tmp) {

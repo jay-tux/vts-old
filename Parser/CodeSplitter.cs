@@ -40,9 +40,16 @@ namespace Jay.VTS.Parser
             CodeBlock currParent = data;
             int lineno = 1;
             bool inString = false;
+            bool inComment = false;
             string currLine = "";
             OGCode.ToCharArray().ToList().ForEach(chr => {
-                if(inString) 
+                if(inComment) {
+                    if(chr == '/' && currLine.EndsWith("*")) {
+                        inComment = false;
+                        currLine = "";
+                    }
+                }
+                else if(inString) 
                 {
                     if(chr == '\n') { throw new VTSException("Syntax Error", "firstPass::code", 
                         $"Newline in constant in <{this.File}>, on line <{lineno}>"); }
@@ -53,6 +60,13 @@ namespace Jay.VTS.Parser
                 {
                     switch(chr)
                     {
+                        case '*':
+                            if(currLine.EndsWith("/")) {
+                                inComment = true;
+                            }
+                            currLine += "*";
+                            break; 
+
                         case '"':
                             inString = true;
                             currLine += '"';
