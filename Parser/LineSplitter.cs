@@ -195,12 +195,12 @@ namespace Jay.VTS.Parser
                     $"Unexpected ';' in <{Location.Item1}> on line <{Location.Item2}>, expected ')'");
             }
             //current result: [ { lst: Identifier }, { =: Operator }, { list: Identifier }, { new: Member }, [ { : Void } ] ]
-            Logger.Log(" ========== Starting rerooting dots on: ========== ");
-            Logger.Log(root.ToOneliner());
-            Logger.Log(" ==========    Rerooting operation:     ========== ");
+            Logger.Log(" ========== Starting rerooting dots on: ========== ", LogType.PARSING);
+            Logger.Log(root.ToOneliner(), LogType.PARSING);
+            Logger.Log(" ==========    Rerooting operation:     ========== ", LogType.PARSING);
             RerootDots(root);
-            Logger.Log(" ==========       Rerooted result:      ========== ");
-            Logger.Log(root.ToOneliner());
+            Logger.Log(" ==========       Rerooted result:      ========== ", LogType.PARSING);
+            Logger.Log(root.ToOneliner(), LogType.PARSING);
             return root;
             //return RerootDots(root);
             //return root;
@@ -211,21 +211,21 @@ namespace Jay.VTS.Parser
             for(int ind = 0; ind < root.Inner.Count; ind++) {
                 if(root[ind].Type == ElementType.Member) {
                     if(ind < root.Inner.Count - 1 && root[ind + 1].Type == ElementType.Block) { 
-                        Logger.Log("Is actual member [" + root[ind].ToOneliner() + "]");
+                        Logger.Log("Is actual member [" + root[ind].ToOneliner() + "]", LogType.DEBUG);
                         /*do nothing*/ 
                     } 
                     else if(ind > 0 && root.Inner[ind - 1].Type == ElementType.Literal) {
-                        Logger.Log("Is literal [" + root[ind].ToOneliner() + "]");
+                        Logger.Log("Is literal [" + root[ind].ToOneliner() + "]", LogType.DEBUG);
                         root.Inner[ind - 1].Content += "." + root.Inner[ind].Content;
                         root.Inner[ind].Type = ElementType.None;
                     }
                     else {
-                        Logger.Log("Is field [" + root[ind].ToOneliner() + "]");
+                        Logger.Log("Is field [" + root[ind].ToOneliner() + "]", LogType.DEBUG);
                         root.Inner[ind].Type = ElementType.Field;
                     }
                 }
                 else if(root[ind].Type == ElementType.Block) {
-                    Logger.Log("Working recursive on block [" + root[ind].ToOneliner() + "]");
+                    Logger.Log("Working recursive on block [" + root[ind].ToOneliner() + "]", LogType.DEBUG);
                     RerootDots(root[ind]);
                 }
             }

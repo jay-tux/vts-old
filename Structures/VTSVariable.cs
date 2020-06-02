@@ -124,16 +124,16 @@ namespace Jay.VTS.Structures
                 sf.StackFrameReturns += (src, res) => {
                     switch(res.ExitCode) {
                         case FrameEventArgs.Exits.ReturnValue: 
-                            Logger.Log("Exited with return value");
+                            Logger.Log("Exited with return value", LogType.EXECUTION);
                             result = res.ReturnValue; 
                             break;
                         case FrameEventArgs.Exits.Return: 
-                            Logger.Log("Exited without return value");
+                            Logger.Log("Exited without return value", LogType.EXECUTION);
                             result = CoreStructures.Void;
                             break;
                         case FrameEventArgs.Exits.InternalException:
                         case FrameEventArgs.Exits.CodeException: 
-                            Logger.Log("Crashed due to error");
+                            Logger.Log("Crashed due to error", LogType.EXECUTION);
                             frame.Crash(res);
                             break;
                     }

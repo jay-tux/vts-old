@@ -48,16 +48,16 @@ namespace Jay.VTS.Structures
                 ArgNames = new List<string>()
             };
             code.Split[2].Inner.ForEach(arg => {
-                Logger.Log("   -> Encountered argument " + arg.ToOneliner());
-                if(arg.Type == ElementType.Void) { Logger.Log("   -> Is Void. Ignoring."); }
-                else if(arg.Type == ElementType.Separator) { Logger.Log("    -> Is Comma. Ignoring."); }
+                Logger.Log("   -> Encountered argument " + arg.ToOneliner(), LogType.DEBUG);
+                if(arg.Type == ElementType.Void) { Logger.Log("   -> Is Void. Ignoring.", LogType.DEBUG); }
+                else if(arg.Type == ElementType.Separator) { Logger.Log("    -> Is Comma. Ignoring.", LogType.DEBUG); }
                 else { 
-                    Logger.Log("   -> Is real Argument. Adding.");
+                    Logger.Log("   -> Is real Argument. Adding.", LogType.DEBUG);
                     action.ArgNames.Add(arg.Content);
                 }
             });
             Logger.Log("  -> Expecting " + action.ArgNames.Count + 
-                " arguments: [ " + string.Join(", ", action.ArgNames) + " ].");
+                " arguments: [ " + string.Join(", ", action.ArgNames) + " ].", LogType.EXECUTION);
             return action;
         }
         

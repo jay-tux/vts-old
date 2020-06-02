@@ -13,7 +13,7 @@ namespace Jay.VTS.Parser
         public static Expression Split(LineElement Target, out uint ArgCount, uint offset = 0) 
         {
             ArgCount = 1;
-            Logger.Log(OffString(offset) + "Converting non-operator call-chain to postfix: " + Target.ToOneliner());
+            Logger.Log("Converting non-operator call-chain to postfix: " + Target.ToOneliner(), LogType.PARSING);
             List<LineElement> infix = Target.Inner;
             Stack<LineElement> holder = new Stack<LineElement>();
             Expression result = new Expression()
@@ -23,11 +23,11 @@ namespace Jay.VTS.Parser
             int index = 0;
             while(index < infix.Count) {
                 LineElement current = infix[index];
-                Logger.Log(OffString(offset) + "Encountered " + current.ToOneliner());
+                Logger.Log("Encountered " + current.ToOneliner(), LogType.DEBUG);
 
                 if(current.Type == ElementType.Block) { 
-                    Logger.Log(OffString(offset) + "  -> Encountered Block.");
-                    Logger.Log(OffString(offset) + "     -> " + current.ToOneliner());
+                    Logger.Log("  -> Encountered Block.", LogType.DEBUG);
+                    Logger.Log("     -> " + current.ToOneliner(), LogType.DEBUG);
                     Expression split = Split(current, out uint argcnt, offset + 1);
                     result.Block.AddRange(split.Block);
                     if(pop.CheckFlip()) { 
@@ -37,25 +37,25 @@ namespace Jay.VTS.Parser
                     }
                     //Add block as series of args
                     //Add previous caller as "operator"
-                    Logger.Log(OffString(offset) + "  -> Finished parsing Block.");
+                    Logger.Log("  -> Finished parsing Block.", LogType.DEBUG);
                 }
                 else if(current.Type == ElementType.Void) {
-                    Logger.Log(OffString(offset) + "  -> Is Void. Ignoring.");
+                    Logger.Log("  -> Is Void. Ignoring.", LogType.DEBUG);
                     //Ignore voids.
                 }
                 else if(current.Type == ElementType.Member) {
-                    Logger.Log(OffString(offset) + "  -> Is Call.");
+                    Logger.Log("  -> Is Call.", LogType.DEBUG);
                     holder.Push(current);
                     pop = true;
                     //Is call, prepare for block
                 }
                 else if(current.Type == ElementType.Separator) {
-                    Logger.Log(OffString(offset) + "  -> Is separator");
+                    Logger.Log("  -> Is separator", LogType.DEBUG);
                     ArgCount++;
                     //separator, skip
                 }
                 else {
-                    Logger.Log(OffString(offset) + "  -> Is probably object ref.");
+                    Logger.Log("  -> Is probably object ref.", LogType.DEBUG);
                     result.Block.Add(new Expression() { 
                         IsCall = false, IsBlock = false, Content = current
                     });
@@ -64,19 +64,13 @@ namespace Jay.VTS.Parser
                 index++;
             }
             if(result.Block.Count == 0) ArgCount = 0;
-            Logger.Log(OffString(offset) + "Result: " + result.ToString());
+            Logger.Log("Result: " + result.ToString(), LogType.PARSING);
             return result;
-        }
-        
-        private static string OffString(uint count) {
-            string res = "";
-            for(int i = 0; i < 2 * count; i++) { res += " "; }
-            return res;
         }
 
         public static Expression ToPostFix(LineElement exp)
         {
-            Logger.Log(" -> Converting to Postfix: " + exp.ToOneliner());
+            Logger.Log(" -> Converting to Postfix: " + exp.ToOneliner(), LogType.PARSING);
             List<LineElement> infix = exp.Inner;
             Stack<LineElement> holder = new Stack<LineElement>();
             Expression result = new Expression() 
@@ -84,7 +78,7 @@ namespace Jay.VTS.Parser
 
             int index = 0;
             while(index < infix.Count) {
-                Logger.Log("Encountered " + infix[index].ToOneliner());
+                Logger.Log("Encountered " + infix[index].ToOneliner(), LogType.DEBUG);
                 if(infix[index].Type != ElementType.Block && infix[index].Type != ElementType.Operator
                     && infix[index].Type != ElementType.Separator) {
                     result.Block.Add(new Expression() {
@@ -92,17 +86,17 @@ namespace Jay.VTS.Parser
                     });
                     /*result.Elements.Add(new OperatorExpression.OpExpElem()
                     { IsOperator = false, Representation = infix[index].Content });*/
-                    Logger.Log("Added Non-operator.");
+                    Logger.Log("Added Non-operator.", LogType.DEBUG);
                 }
                 else if(infix[index].Type == ElementType.Block) {
-                    Logger.Log("Encoutered Range");
+                    Logger.Log("Encoutered Range", LogType.DEBUG);
                     //Expression parsed = ToPostFix(infix[index]);
                     //result.Block.AddRange(parsed.Block);
                     result.Block.Add(new Expression() { IsBlock = true, Block = ToPostFix(infix[index]).Block });
-                    Logger.Log("Added Range");
+                    Logger.Log("Added Range", LogType.DEBUG);
                 }
                 else if(infix[index].Type == ElementType.Separator) {
-                    Logger.Log("Encountered Comma; popping whole stack.");
+                    Logger.Log("Encountered Comma; popping whole stack.", LogType.DEBUG);
                     while(holder.Count > 0) {
                         result.Block.Add(new Expression() { 
                             IsBlock = false, Content = holder.Pop()
@@ -119,7 +113,7 @@ namespace Jay.VTS.Parser
                         });
                         /*result.Elements.Add(new OperatorExpression.OpExpElem() 
                         { IsOperator = true, Representation = holder.Pop().Content }); */
-                        Logger.Log("Added Operator to Postfix.");
+                        Logger.Log("Added Operator to Postfix.", LogType.DEBUG);
                     }
                     holder.Push(infix[index]);
                 }
@@ -128,7 +122,7 @@ namespace Jay.VTS.Parser
             while(holder.Count > 0)
                 result.Block.Add(new Expression() { IsBlock = false, Content = holder.Pop() });
                 //result.Elements.Add(new OperatorExpression.OpExpElem() { IsOperator = true, Representation = holder.Pop().Content });
-            Logger.Log("Postfix result: " + result);
+            Logger.Log("Postfix result: " + result, LogType.PARSING);
             return result;
         }
     }

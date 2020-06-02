@@ -85,18 +85,18 @@ namespace Jay.VTS.Execution
                 FrameEventArgs args = new FrameEventArgs() { ExitCode = FrameEventArgs.Exits.EOF };
                 while(!Finished && Index < Root.Contents.Count) {
                     Pointer = Root.Contents[Index];
-                    Logger.Log(" ------ Index: " + Index + " ------ ");
+                    Logger.Log(" ------ Index: " + Index + " ------ ", LogType.EXECUTION);
                     if(Pointer.Split.Inner.Count > 0) {
                         //Is nonempty
                         LineElement lead = Pointer.Split.Inner[0];
                         switch(lead.Type) {
                             case ElementType.Control:
-                                Logger.Log("Encountered control call (either if, else or while)");
+                                Logger.Log("Encountered control call (either if, else or while)", LogType.MESSAGE);
                                 ControlCall(Pointer);
                                 break;
                             case ElementType.Return:
                                 //return; set expression value as return value and stop execution.
-                                Logger.Log("StackFrame finished with return call.");
+                                Logger.Log("StackFrame finished with return call.", LogType.MESSAGE);
                                 Finished = true;
                                 RunExpression(BlockParse.ParseSingleBlock(this, Pointer));
                                 args.ExitCode = FrameEventArgs.Exits.ReturnValue;
@@ -125,10 +125,10 @@ namespace Jay.VTS.Execution
 
         private void ControlCall(CodeBlock block) 
         {
-            Logger.Log(" === Trying to resolve control call ===");
+            Logger.Log(" === Trying to resolve control call ===", LogType.EXECUTION);
             RunExpression(BlockParse.ParseSingleBlock(this, block.Split.Inner[1]));
             if(TempValue.Class == CoreStructures.VTSBool && (bool)TempValue.Fields["value"] == true) {
-                Logger.Log(" === CONTROL RESULTED IN TRUE ===");
+                Logger.Log(" === CONTROL RESULTED IN TRUE ===", LogType.MESSAGE);
                 StackFrame copy = new StackFrame(block, 0) {
                     IsCopyFrame = true,
                     Parent = this
@@ -149,50 +149,51 @@ namespace Jay.VTS.Execution
                 };
                 copy.Execute();
                 if(!Finished && block.Split.Inner[0].Content == "while") {
-                    Logger.Log("Is while loop; jumpback...");
+                    Logger.Log("Is while loop; jumpback...", LogType.EXECUTION);
                     Index--;
                 }
             }
             else {
-                Logger.Log(" === CONTROL RESULTED IN FALSE ===");
+                Logger.Log(" === CONTROL RESULTED IN FALSE ===", LogType.MESSAGE);
             }
         }
 
         private void RunExpression(Expression e) {
             if(e == null) return;
-            Logger.Log(" == Running Expression " + e.ToString() + " ==");if(!e.IsBlock) throw new VTSException("ParseError", this, "Expression should be a block type.", null);
+            Logger.Log(" == Running Expression " + e.ToString() + " ==", LogType.DEBUG);
+            if(!e.IsBlock) throw new VTSException("ParseError", this, "Expression should be a block type.", null);
             Stack<VTSVariable> vars = new Stack<VTSVariable>();
             foreach(Expression sub in e.Block) {
                 LineElement content = sub.Content;
                 if(content.Type == ElementType.Return || content.Type == ElementType.None) { /*skip return*/ }
                 else if(content.Type == ElementType.Identifier) {
-                    Logger.Log("  -> Encountered Identifier; pushing");
+                    Logger.Log("  -> Encountered Identifier; pushing", LogType.DEBUG);
                     string rfr = content.Content;
                     if(Interpreter.Instance.ContainsClass(rfr)) {
                         //Is class, push class
-                        Logger.Log("            Is Class: pushing type reference.");
+                        Logger.Log("            Is Class: pushing type reference.", LogType.DEBUG);
                         vars.Push(Interpreter.Instance.Classes[rfr].TypeRef);
                     }
                     else if(HasVar(rfr)) {
                         //Is scope variable, push var ref
-                        Logger.Log("            Is Variable reference.");
+                        Logger.Log("            Is Variable reference.", LogType.DEBUG);
                         vars.Push(GetVariable(rfr));
                     }
                     else {
                         //Is null reference
-                        Logger.Log("            Is Nothing, pushing undefined var.");
+                        Logger.Log("            Is Nothing, pushing undefined var.", LogType.DEBUG);
                         vars.Push(VTSVariable.UNDEFINED(rfr));
                         /*throw new VTSException("NameError", this, 
                             "The type or identifier " + rfr + " is not defined.", null);*/
                     }
                 }
                 else if(content.Type == ElementType.Literal) {
-                    Logger.Log("  -> Encountered Literal; parsing and pushing");
+                    Logger.Log("  -> Encountered Literal; parsing and pushing", LogType.DEBUG);
                     //parse literal and push to stack
                     vars.Push(Literal.Parse(content.Content));
                 }
                 else if(content.Type == ElementType.Operator) {
-                    Logger.Log("  -> Encountered Operator; popping operands (2)");
+                    Logger.Log("  -> Encountered Operator; popping operands (2)", LogType.DEBUG);
                     //pop 2 vars from stack
                     if(vars.Count < 2) {
                         throw new VTSException("ArgumentError", this,
@@ -203,11 +204,13 @@ namespace Jay.VTS.Execution
                     //try to run operator
                     if((VTSOperator)content == VTSOperator.ASSIGN) {
                         //special case: assignment (can be null)
-                        Logger.Log("");
+                        Logger.Log("", LogType.EXECUTION);
                         Logger.Log("Operand 1: " + operand1.ToString(this) + "$" + 
-                            (operand1.Class == null ? "(typeless)" : operand1.Class.Name) + "~'" + operand1.Name + "'");
+                            (operand1.Class == null ? "(typeless)" : operand1.Class.Name) + "~'" + operand1.Name + "'",
+                            LogType.DEBUG);
                         Logger.Log("Operand 2: " + operand2.ToString(this) + "$" + 
-                            (operand2.Class == null ? "(typeless)" : operand2.Class.Name) + "~'" + operand2.Name + "'");
+                            (operand2.Class == null ? "(typeless)" : operand2.Class.Name) + "~'" + operand2.Name + "'",
+                            LogType.DEBUG);
                         if(operand1.Name == "this") {
                             //error: can't change this reference
                             throw new VTSException("ReferenceError", this, "Cannot assign to <this> because it's read-only.", null);
@@ -239,8 +242,8 @@ namespace Jay.VTS.Execution
                         VTSVariable result = GetVariable(operand1.Name);
                         Logger.Log("Result   : " + result.ToString(this) + "$" + 
                             (result.Class == null ? "(typeless)" : result.Class.Name) + 
-                            "~'" + result.Name + "'");
-                        Logger.Log("");
+                            "~'" + result.Name + "'", LogType.DEBUG);
+                        Logger.Log("", LogType.DEBUG);
                     }
                     else {
                         //normal case, call
@@ -257,7 +260,8 @@ namespace Jay.VTS.Execution
                     //push result
                 }
                 else if(content.Type == ElementType.Member) {
-                    Logger.Log("  -> Encountered Member <" + content.Content + ">; popping values (" + sub.ArgCount + ") and caller");
+                    Logger.Log("  -> Encountered Member <" + content.Content + ">; popping values (" + sub.ArgCount + ") and caller",
+                        LogType.DEBUG);
                     //Try popping args
                     List<VTSVariable> args = new List<VTSVariable>();
                     for(int i = 0; i < sub.ArgCount; i++) {
@@ -279,19 +283,19 @@ namespace Jay.VTS.Execution
                     }
                     VTSVariable caller = vars.Pop();
                     if(caller.Class == null) throw VTSException.NullRef(caller.Name, this);
-                    Logger.Log("    -> Popped arguments, caller is " + caller.ToString());
-                    Logger.Log("    -> Arguments are (in order): ");
-                    if(args.Count == 0) Logger.Log("      -> (no args)");
-                    else args.ForEach(x => Logger.Log("      -> " + x.ToString()));
+                    Logger.Log("    -> Popped arguments, caller is " + caller.ToString(), LogType.DEBUG);
+                    Logger.Log("    -> Arguments are (in order): ", LogType.DEBUG);
+                    if(args.Count == 0) Logger.Log("      -> (no args)", LogType.DEBUG);
+                    else args.ForEach(x => Logger.Log("      -> " + x.ToString(), LogType.DEBUG));
                     //call method
                     VTSVariable result = caller.Call(content.Content, this, args);
-                    if(result == null) Logger.Log("Somehow, we didn't get a result?");
-                    else Logger.Log("    -> Result is " + result.ToString());
+                    if(result == null) Logger.Log("Somehow, we didn't get a result?", LogType.WARNING);
+                    else Logger.Log("    -> Result is " + result.ToString(), LogType.DEBUG);
                     //push result
                     vars.Push(result);
                 }
                 else if(content.Type == ElementType.Field) {
-                    Logger.Log("Encountered field; replacing previous value (owner) with field");
+                    Logger.Log("Encountered field; replacing previous value (owner) with field", LogType.DEBUG);
                     //encountered field
                     //get owner of field
                     if(vars.Count == 0) throw new VTSException("ArgumentError", this, "Unable to pop owner of field", null);
@@ -302,12 +306,12 @@ namespace Jay.VTS.Execution
                         VTSVariable replacement;
                         if(owner.Fields[fieldName] is VTSVariable) {
                             //field is real field
-                            Logger.Log("  -> Real field");
+                            Logger.Log("  -> Real field", LogType.MESSAGE);
                             replacement = (VTSVariable)owner.Fields[fieldName];
                         }
                         else {
                             //field is value field from default type
-                            Logger.Log("  -> Pseudo field");
+                            Logger.Log("  -> Pseudo field", LogType.MESSAGE);
                             replacement = owner;
                         }
                         vars.Push(replacement);
@@ -321,22 +325,22 @@ namespace Jay.VTS.Execution
                     throw new VTSException("ExpressionError", this, "Only Identifiers, Literals, Operators and Calls " +
                         "are allowed in an Expression.", null);
                 }
-                Logger.Log("  ----------- Current Stack: ----------");
+                Logger.Log("  ----------- Current Stack: ----------", LogType.STRUTURAL);
                 vars.ToArray().ForEach(x => {
                     if(x == null) {
-                        Logger.Log(" ^: Empty stack entry.");
+                        Logger.Log(" ^: Empty stack entry.", LogType.WARNING);
                     }
                     else if(x.Class == null) {
-                        Logger.Log(" ^: Uninitialized variable: " + x.Name);
+                        Logger.Log(" ^: Uninitialized variable: " + x.Name, LogType.WARNING);
                     }
                     else if(x.IsTypeRef) {
-                        Logger.Log(" ^: TypeRef$" + x.Class.Name);
+                        Logger.Log(" ^: TypeRef$" + x.Class.Name, LogType.STRUTURAL);
                     }
                     else {
-                        Logger.Log(" ^: " + x.Name + "#" + x.Class.Name + "::" + x.ToString(this));
+                        Logger.Log(" ^: " + x.Name + "#" + x.Class.Name + "::" + x.ToString(this), LogType.STRUTURAL);
                     }
                 });
-                Logger.Log(" ------------                ----------");
+                Logger.Log(" ------------                ----------", LogType.STRUTURAL);
             }
             if(vars.Count == 1) {
                 TempValue = vars.Pop();
@@ -344,45 +348,45 @@ namespace Jay.VTS.Execution
             else if(vars.Count > 1) {
                 throw new VTSException("ExpressionError", this, "Unbalanced expression. <" + vars.Count + "> variables too much.", null);
             }
-            Logger.Log(" == Finished running Expression ==");
+            Logger.Log(" == Finished running Expression ==", LogType.EXECUTION);
         }
 
         public void PrintScope() {
-            Logger.Log(" === Current Scope Variables === ");
+            Logger.Log(" === Current Scope Variables === ", LogType.STRUTURAL);
             if(Variables == null) {
-                Logger.Log("  -- Variables Dictionary is null --");
+                Logger.Log("  -- Variables Dictionary is null --", LogType.WARNING);
             }
             else if(CoreStructures.BuiltinVariables == null) {
-                Logger.Log("  -- Core Variables Dictionary is null --");
+                Logger.Log("  -- Core Variables Dictionary is null --", LogType.WARNING);
             }
             else {
-                Logger.Log("^: Local variables");
+                Logger.Log("^: Local variables", LogType.STRUTURAL);
                 Variables.ForEach(x => { 
                     /*if(x == null) { Logger.Log("(null/empty entry)"); }
-                    else*/ if(x.Value == null) { Logger.Log("(null/empty variable)"); }
-                    else if(x.Value.Class == null) { Logger.Log("(typeless variable)"); }
-                    else if(x.Value.Class.Name == null) { Logger.Log("(unnamed class type)"); }
-                    else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name); }
+                    else*/ if(x.Value == null) { Logger.Log("(null/empty variable)", LogType.WARNING); }
+                    else if(x.Value.Class == null) { Logger.Log("(typeless variable)", LogType.WARNING); }
+                    else if(x.Value.Class.Name == null) { Logger.Log("(unnamed class type)", LogType.WARNING); }
+                    else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name, LogType.STRUTURAL); }
                 });
                 if(IsCopyFrame && Parent.Variables != null) {
-                    Logger.Log("^: Directly Inherited Copy variables");
+                    Logger.Log("^: Directly Inherited Copy variables", LogType.STRUTURAL);
                     Parent.Variables.ForEach(x => {
-                        if(x.Value == null) { Logger.Log("(null/empty variable)"); }
-                        else if(x.Value.Class == null) { Logger.Log("(typeless variable)"); }
-                        else if(x.Value.Class.Name == null) { Logger.Log("(unnamed class type)"); }
-                        else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name); }
+                        if(x.Value == null) { Logger.Log("(null/empty variable)", LogType.WARNING); }
+                        else if(x.Value.Class == null) { Logger.Log("(typeless variable)", LogType.WARNING); }
+                        else if(x.Value.Class.Name == null) { Logger.Log("(unnamed class type)", LogType.WARNING); }
+                        else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name, LogType.STRUTURAL); }
                     });
-                    Logger.Log("^: Indirectly Inherited Copy variables not shown.");
+                    Logger.Log("^: Indirectly Inherited Copy variables not shown.", LogType.STRUTURAL);
                 }
-                Logger.Log("^: Global variables");
+                Logger.Log("^: Global variables", LogType.STRUTURAL);
                 CoreStructures.BuiltinVariables.ForEach(x => { 
-                    if(x.Value == null) { Logger.Log(x.Key + ": (null/empty variable)"); }
-                    else if(x.Value.Class == null) { Logger.Log(x.Key + ": (typeless variable)"); }
-                    else if(x.Value.Class.Name == null) { Logger.Log(x.Key + ": (unnamed class type)"); }
-                    else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name); }
+                    if(x.Value == null) { Logger.Log(x.Key + ": (null/empty variable)", LogType.WARNING); }
+                    else if(x.Value.Class == null) { Logger.Log(x.Key + ": (typeless variable)", LogType.WARNING); }
+                    else if(x.Value.Class.Name == null) { Logger.Log(x.Key + ": (unnamed class type)", LogType.WARNING); }
+                    else { Logger.Log(" -> " + x.Key + ": " + x.Value.Class.Name, LogType.STRUTURAL); }
                 });
             }
-            Logger.Log(" === End of Overview === ");
+            Logger.Log(" === End of Overview === ", LogType.STRUTURAL);
         }
 
         protected virtual void OnStackFrameReturns(FrameEventArgs e) {

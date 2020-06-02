@@ -3,8 +3,9 @@
 compile='false'
 debug='false'
 verbose='false'
+flags=''
 
-while getopts 'cdvh' opt; do
+while getopts 'cdf:vh' opt; do
 	case $opt in
 		'c')
 			compile='true'
@@ -15,18 +16,10 @@ while getopts 'cdvh' opt; do
 		'v')
 			verbose='true'
 			;;
+		'f')
+			flags="$flags -define:$OPTARG"
+			;;
 		'h')
-			#echo " **** MONO COMPILER FOR DND.NET ****"
-			#echo "This script uses Mono to build and/or"
-			#echo "run the dnd.NET software."
-			#echo ""
-			#echo "Use the -c option to compile, and the"
-			#echo "-r option to run."
-			#echo "When compiling, the output file is"
-			#echo "./bin/dnd.NET.exe, which can be run "
-			#echo "with the mono command, or with Wine."
-			#echo " **** MONO COMPILER FOR DND.NET ****"
-			#;;
 			echo "Not implemented yet..."
 			;;
 		*)
@@ -38,11 +31,17 @@ done
 if [[ $compile == 'true' ]]; then
 	if [[ $verbose == 'true' ]]; then
 		echo 'Verbose enabled: compiling verbose logging version to bin/vts-verbose.exe'
-		mcs -define:VERBOSE -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-verbose.exe -main:Jay.VTS.Program *.cs */*.cs
+		mcs -define:VERBOSE -define:EXECUTION -define:MODULE -define:PARSING -define:WARNING -define:STRUCTURAL \
+			-r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-verbose.exe -main:Jay.VTS.Program *.cs */*.cs
 	fi
 	if [[ $debug == 'true' ]]; then
 		echo 'Debug enabled: compiling debug version to bin/vts-debug.exe'
-		mcs -define:VERBOSE -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-debug.exe -main:Jay.VTS.Program -debug *.cs */*.cs
+		mcs -define:VERBOSE -define:EXECUTION -define:MODULE -define:PARSING -define:WARNING -define:STRUCTURAL -define:DEBUG -define:MESSAGE \
+			-r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-verbose.exe -main:Jay.VTS.Program *.cs */*.cs
+	fi
+	if [[ $flags != '' ]]; then
+		echo "Flags not empty; compiling with $flags to bin/vts-flagged.exe"
+		mcs $flags -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-flagged.exe -main:Jay.VTS.Program -debug *.cs */*.cs
 	fi
 	echo 'Compile enabled: compiling release version to bin/vts-parse.exe'
 	mcs -r:System.Data -r:System.Drawing -r:System.Windows.Forms -out:bin/vts-parse.exe -main:Jay.VTS.Program *.cs */*.cs

@@ -18,11 +18,13 @@ namespace Jay.VTS
 			try
 			{
 				Logger.Log("+====================================+\n" + " Started execution at " + 
-					System.DateTime.Now.ToLongTimeString() + "\n+====================================+\n");
+					System.DateTime.Now.ToLongTimeString() + "\n+====================================+\n", 
+					LogType.NOIGNORE);
 				Interpreter.Create(args.Length < 1 ? "--interactive" : args[0]);
 				Interpreter.Instance.FirstPass().LoadVTSModules().LoadImports().SecondPass();
 				Logger.Log("+====================================+\n" + " Execution finished at " + 
-					System.DateTime.Now.ToLongTimeString() + "\n+====================================+\n");
+					System.DateTime.Now.ToLongTimeString() + "\n+====================================+\n",
+					LogType.NOIGNORE);
 			}
 			catch(VTSException vtse)
 			{

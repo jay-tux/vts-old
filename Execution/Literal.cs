@@ -8,7 +8,7 @@ namespace Jay.VTS.Execution
     public class Literal
     {
         public static VTSVariable Parse(string Literal) {
-            Logger.Log("Trying to parse literal " + Literal);
+            Logger.Log("Trying to parse literal " + Literal, LogType.PARSING);
             //literal true; return ref to constant true
             if(Literal == "true") return CoreStructures.True();
             //literal false; return ref to constant false

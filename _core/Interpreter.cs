@@ -84,16 +84,16 @@ namespace Jay.VTS
 		public void AddClass(VTSClass ClassCode) => this.Classes[ClassCode.Name] = ClassCode;
 		
 		public void PrintAll() {
-			Logger.Log(" ===== Current Memory Structures: =====");
+			Logger.Log(" ===== Current Memory Structures: =====", LogType.STRUTURAL);
 			Classes.ForEach(cls => {
 				Logger.Log(" -> " + cls.Key + " [" + cls.Value.Actions.Keys.Count +" actions; " + 
-					cls.Value.Internals.Keys.Count + " internals]");
-				cls.Value.Fields.Keys.ForEach(fld => Logger.Log("   -> Field::" + fld));
-				cls.Value.Actions.Values.ForEach(act => Logger.Log("   -> Action::" + act));
-				cls.Value.Internals.Keys.ForEach(ntr => Logger.Log("   -> Internal::" + ntr));
-				cls.Value.Operators.AsEnumerable().ForEach(x => Logger.Log("   -> Operator<" + x.Key + ">::" + x.Value));
+					cls.Value.Internals.Keys.Count + " internals]", LogType.STRUTURAL);
+				cls.Value.Fields.Keys.ForEach(fld => Logger.Log("   -> Field::" + fld, LogType.STRUTURAL));
+				cls.Value.Actions.Values.ForEach(act => Logger.Log("   -> Action::" + act, LogType.STRUTURAL));
+				cls.Value.Internals.Keys.ForEach(ntr => Logger.Log("   -> Internal::" + ntr, LogType.STRUTURAL));
+				cls.Value.Operators.ForEach(x => Logger.Log("   -> Operator<" + x.Key + ">::" + x.Value, LogType.STRUTURAL));
 			});
-			Logger.Log(" ===== End of Overview ===== \n\n");
+			Logger.Log(" ===== End of Overview ===== \n\n", LogType.STRUTURAL);
 		}
 
 		public Interpreter LoadImports() {
@@ -114,9 +114,9 @@ namespace Jay.VTS
 			return this;
 		}
 		public Interpreter SecondPass() {
-			Root.Contents.ForEach(fil => Logger.Log((string)fil + "\n"));
-			Logger.Log("");
-			Root.Contents.ForEach(fil => Logger.Log(fil.ToParentString(0) + "\n"));
+			Root.Contents.ForEach(fil => Logger.Log((string)fil + "\n", LogType.PARSING));
+			Logger.Log("", LogType.PARSING);
+			Root.Contents.ForEach(fil => Logger.Log(fil.ToParentString(0) + "\n", LogType.PARSING));
 			//Console.WriteLine(" ------ ");
 			StackFrame rootFrame = StackFrame.FindEntry(Root);
 			if(rootFrame == null) {
