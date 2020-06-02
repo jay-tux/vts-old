@@ -14,14 +14,16 @@ namespace Jay.VTS
 {
 	public class Interpreter
 	{
-		private List<string> _imported;
+		public Dictionary<string, Action> VTSModules = new Dictionary<string, Action>() {
+			["IO"] = () => IOStructures.AppendIOModule()
+		};
+		public Dictionary<string, bool> VTSModuleStatus = new Dictionary<string, bool>() {
+			["IO"] = false
+		};
 		private string _native;
-		public string Native { get => _native; private set => _native = value; }
-		public int ImportedLength { get => _imported.Count; }
 		public CodeBlock Pass;
 		public CodeBlock Root;
 		public string Filename { get; }
-		//public List<VTSClass> Classes = new List<VTSClass>() { CoreStructures.CoreClass, CoreStructures.VoidClass };
 		public Dictionary<string, VTSClass> Classes = new Dictionary<string, VTSClass>();
 		public List<VTSVariable> Variables;
 		public static Interpreter Instance;
@@ -53,6 +55,7 @@ namespace Jay.VTS
 				{
 					this.Filename = file;
 					Program.Instance.LoadedFiles.Add(file);
+					
 					if(File.Exists(file))
 					{
 						_native = File.ReadAllText(file);
@@ -70,8 +73,6 @@ namespace Jay.VTS
 				}
 			}
 		}
-
-		public string this[int line] { get => _imported[line]; private set => _imported[line] = value; }
 
 		public Interpreter LoadVTSModules() {
 			return this;
@@ -146,7 +147,5 @@ namespace Jay.VTS
 			//Console.WriteLine(" ------ ");
 			return this;
 		}
-
-		public void Add(string Import) => _imported.Add(Import);
 	}
 }
