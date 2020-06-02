@@ -41,12 +41,20 @@ namespace Jay.VTS.Parser
             int lineno = 1;
             bool inString = false;
             bool inComment = false;
+            bool asterisk = false;
             string currLine = "";
             OGCode.ToCharArray().ToList().ForEach(chr => {
                 if(inComment) {
-                    if(chr == '/' && currLine.EndsWith("*")) {
+                    if(chr == '\n') lineno++;
+                    if(chr == '*') {
+                        asterisk = true;
+                    }
+                    else if(chr == '/' && asterisk) {
                         inComment = false;
                         currLine = "";
+                    }
+                    else {
+                        asterisk = false;
                     }
                 }
                 else if(inString) 
@@ -63,8 +71,8 @@ namespace Jay.VTS.Parser
                         case '*':
                             if(currLine.EndsWith("/")) {
                                 inComment = true;
+                                currLine = "";
                             }
-                            currLine += "*";
                             break; 
 
                         case '"':
