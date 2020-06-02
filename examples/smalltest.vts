@@ -1,6 +1,3 @@
 entry () {
-    lst = list.new();   /*constructor call*/
-    a = lst.count;      /*field call*/
-    lst.add(65);        /*member call*/
-    lst.add(17.68);     /*member call, float literal*/
+    core.stdout(15.85);
 }

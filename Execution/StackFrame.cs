@@ -164,7 +164,7 @@ namespace Jay.VTS.Execution
             Stack<VTSVariable> vars = new Stack<VTSVariable>();
             foreach(Expression sub in e.Block) {
                 LineElement content = sub.Content;
-                if(content.Type == ElementType.Return) { /*skip return*/ }
+                if(content.Type == ElementType.Return || content.Type == ElementType.None) { /*skip return*/ }
                 else if(content.Type == ElementType.Identifier) {
                     Logger.Log("  -> Encountered Identifier; pushing");
                     string rfr = content.Content;
@@ -289,6 +289,33 @@ namespace Jay.VTS.Execution
                     else Logger.Log("    -> Result is " + result.ToString());
                     //push result
                     vars.Push(result);
+                }
+                else if(content.Type == ElementType.Field) {
+                    Logger.Log("Encountered field; replacing previous value (owner) with field");
+                    //encountered field
+                    //get owner of field
+                    if(vars.Count == 0) throw new VTSException("ArgumentError", this, "Unable to pop owner of field", null);
+                    VTSVariable owner = vars.Pop();
+                    //get field variable from owner
+                    string fieldName = content.Content;
+                    if(owner.Class.Fields.ContainsKey(fieldName)) {
+                        VTSVariable replacement;
+                        if(owner.Fields[fieldName] is VTSVariable) {
+                            //field is real field
+                            Logger.Log("  -> Real field");
+                            replacement = (VTSVariable)owner.Fields[fieldName];
+                        }
+                        else {
+                            //field is value field from default type
+                            Logger.Log("  -> Pseudo field");
+                            replacement = owner;
+                        }
+                        vars.Push(replacement);
+                    }
+                    else {
+                        throw new VTSException("NameError", this, "Class " + owner.Class.Name + 
+                            " doesn't have a field " + fieldName, null);
+                    }
                 }
                 else {
                     throw new VTSException("ExpressionError", this, "Only Identifiers, Literals, Operators and Calls " +

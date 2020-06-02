@@ -86,7 +86,7 @@ namespace Jay.VTS.Structures
         };
         public static VTSClass ListClass = new VTSClass() {
             Name = "list", Actions = new Dictionary<string, VTSAction>(),
-            Fields = new Dictionary<string, string>() { ["value"] = "List<T>" },
+            Fields = new Dictionary<string, string>() { ["value"] = "List<T>", ["count"] = "int" },
             Operators = new Dictionary<VTSOperator, VTSAction>(),
             Internals = new Dictionary<string, Func<VTSVariable, List<VTSVariable>, StackFrame, VTSVariable>>() {
                 ["toString"] = ((caller, args, frame) => {
@@ -95,29 +95,27 @@ namespace Jay.VTS.Structures
                     else return new VTSVariable() {
                         Class = VTSString, Mutable = false,
                         Fields = new Dictionary<string, object>() { ["value"] = "[list`" + 
-                            ((List<VTSVariable>)caller.Fields["value"]).Count + "]" }
+                            (int)((VTSVariable)caller.Fields["count"]).Fields["value"] + "]" }
                     };
                 }),
                 ["new"] = ((caller, args, frame) => {
                     if(args.Count != 0) 
                         throw VTSException.ArgCountException("list", "new", 0, (uint)args.Count, frame);
                     caller.Fields["value"] = new List<VTSVariable>();
+                    caller.Fields["count"] = new VTSVariable() { 
+                        Class = VTSInt, Mutable = false, Fields = new Dictionary<string, object>() {
+                            ["value"] = 0
+                        }
+                    };
                     return caller;
                 }),
                 ["add"] = ((caller, args, frame) => {
                     if(args.Count != 1)
                         throw VTSException.ArgCountException("list", "add", 1, (uint)args.Count, frame);
                     ((List<VTSVariable>)caller.Fields["value"]).Add(args[0]);
+                    ((VTSVariable)caller.Fields["count"]).Fields["value"] = 
+                        (int)((VTSVariable)caller.Fields["count"]).Fields["value"] + 1;
                     return Void;
-                }),
-                ["count"] = ((caller, args, frame) => {
-                    if(args.Count != 0)
-                        throw VTSException.ArgCountException("list", "count", 0, (uint)args.Count, frame);
-                    return new VTSVariable() {
-                        Class = VTSInt, Mutable = false,
-                        Fields = new Dictionary<string, object>() 
-                        { ["value"] = ((List<VTSVariable>)caller.Fields["value"]).Count }
-                    };
                 }),
                 ["get"] = ((caller, args, frame) => {
                     if(args.Count != 1)
@@ -154,6 +152,8 @@ namespace Jay.VTS.Structures
                         throw new VTSException("RangeError", frame,
                             "Index " + (int)index.Fields["value"] + " out of range.", null);
                     VTSVariable res = ((List<VTSVariable>)caller.Fields["value"])[(int)index.Fields["value"]];
+                    ((VTSVariable)caller.Fields["count"]).Fields["value"] = 
+                        (int)((VTSVariable)caller.Fields["count"]).Fields["value"] - 1;
                     ((List<VTSVariable>)caller.Fields["value"]).RemoveAt((int)index.Fields["value"]);
                     return res;
                 })
