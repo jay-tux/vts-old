@@ -75,6 +75,7 @@ namespace Jay.VTS
 		}
 
 		public Interpreter LoadVTSModules() {
+			new ImportModule().LoadModules(Pass);
 			return this;
 		}
 
@@ -85,15 +86,11 @@ namespace Jay.VTS
 		public void PrintAll() {
 			Logger.Log(" ===== Current Memory Structures: =====");
 			Classes.ForEach(cls => {
-				Logger.Log(" -> " + cls.Key + " [" + cls.Value.Actions.Keys.Count +" actions]");
+				Logger.Log(" -> " + cls.Key + " [" + cls.Value.Actions.Keys.Count +" actions; " + 
+					cls.Value.Internals.Keys.Count + " internals]");
 				cls.Value.Fields.Keys.ForEach(fld => Logger.Log("   -> Field::" + fld));
 				cls.Value.Actions.Values.ForEach(act => Logger.Log("   -> Action::" + act));
-				cls.Value.Operators.AsEnumerable().ForEach(x => Logger.Log("   -> Operator<" + x.Key + ">::" + x.Value));
-			});
-			CoreStructures.BuiltinClasses.ForEach(cls => {
-				Logger.Log(" -> " + cls.Key + " [" + cls.Value.Actions.Keys.Count +" actions]");
-				cls.Value.Fields.Keys.ForEach(fld => Logger.Log("   -> Field::" + fld));
-				cls.Value.Actions.Values.ForEach(act => Logger.Log("   -> Action::" + act));
+				cls.Value.Internals.Keys.ForEach(ntr => Logger.Log("   -> Internal::" + ntr));
 				cls.Value.Operators.AsEnumerable().ForEach(x => Logger.Log("   -> Operator<" + x.Key + ">::" + x.Value));
 			});
 			Logger.Log(" ===== End of Overview ===== \n\n");
