@@ -350,6 +350,15 @@ namespace Jay.VTS.Structures
                     if(args.Count != 0) 
                         throw VTSException.ArgCountException("string", "toString", 0, (uint)args.Count, frame);
                     else return caller;
+                }),
+                ["getLength"] = ((caller, args, frame) => {
+                    if(args.Count != 0)
+                        throw VTSException.ArgCountException("string", "getLength", 0, (uint)args.Count, frame);
+                    return new VTSVariable() {
+                        Class = VTSInt, Mutable = false, Fields = new Dictionary<string, object>() {
+                            ["value"] = ((string)caller.Fields["value"]).Length
+                        }
+                    };
                 })
             }
         };
