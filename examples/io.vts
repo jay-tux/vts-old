@@ -4,13 +4,13 @@
 */
 
 entry () {
-    core.stdout("Currently working in: " + Directory.new("./").getCwd() + "\n");
+    core.stdout("Currently working in: " + Directory.new("./").fullPath + "\n");
     dir = Directory.new("./");
     lst = dir.getFiles();
     index = 0;
     a = lst.count;
     while(index < a) {
-        core.stdout("Found file: " + lst.get(index) + "\n");
+        core.stdout("Found file: " + lst.get(index) + " \t(" + File.new(lst.get(index)).fullPath + ")\n");
         index = index + 1;
     }
     
@@ -20,5 +20,12 @@ entry () {
     while(index < a) {
         core.stdout("Found directory: " + lst.get(index) + "\n");
         index = index + 1;
+    }
+    
+    core.stdout("\nGoing up the hierarchy from this file (io.vts)...\n");
+    dir = File.new("./io.vts");
+    while(true) { /*True can be used: will crash when reaching '/'*/
+        core.stdout("Current absolute path: " + dir.fullPath + "\n");
+        dir = dir.getParent();
     }
 }

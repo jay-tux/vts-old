@@ -24,7 +24,7 @@ namespace Jay.VTS.Structures
         {
             Interpreter.Instance.Classes["File"] = new VTSClass() {
                 Name = "File", Fields = new Dictionary<string, string>() {
-                    ["path"] = "string"
+                    ["path"] = "string", ["fullPath"] = "string"
                 },
                 Actions = new Dictionary<string, VTSAction>(),
                 Operators = new Dictionary<VTSOperator, VTSAction>(),
@@ -49,6 +49,11 @@ namespace Jay.VTS.Structures
                         caller.Fields["path"] = new VTSVariable() {
                             Class = CoreStructures.VTSString, Mutable = false, Fields = new Dictionary<string, object>() {
                                 ["value"] = args[0].Fields["value"]
+                            }
+                        };
+                        caller.Fields["fullPath"] = new VTSVariable() {
+                            Class = CoreStructures.VTSString, Mutable = false, Fields = new Dictionary<string, object>() {
+                                ["value"] = Path.GetFullPath((string)args[0].Fields["value"])
                             }
                         };
                         return caller;
@@ -183,13 +188,36 @@ namespace Jay.VTS.Structures
                                 frame
                             );
                         }
+                    }),
+                    ["getParent"] = ((caller, args, frame) => {
+                        if(args.Count != 0)
+                            throw VTSException.ArgCountException("File", "getParent", 0, (uint)args.Count, frame);
+                        string[] parent = ((string)((VTSVariable)caller.Fields["fullPath"]).Fields["value"]).Split('/');
+                        parent[parent.Length - 1] = "";
+                        return new VTSVariable() {
+                            Class = Interpreter.Instance.Classes["Directory"], Mutable = false,
+                            Fields = new Dictionary<string, object> () {
+                                ["path"] = new VTSVariable() {
+                                    Class = CoreStructures.VTSString, Mutable = false,
+                                    Fields = new Dictionary<string, object>() { 
+                                        ["value"] = string.Join("/", parent)
+                                    }
+                                },
+                                ["fullPath"] = new VTSVariable() {
+                                    Class = CoreStructures.VTSString, Mutable = false,
+                                    Fields = new Dictionary<string, object>() { 
+                                        ["value"] = string.Join("/", parent)
+                                    }
+                                }
+                            }
+                        };
                     })
                 }
             };
 
             Interpreter.Instance.Classes["Directory"] = new VTSClass() {
                 Name = "Directory", Fields = new Dictionary<string, string>() {
-                    ["path"] = "string"
+                    ["path"] = "string", ["fullPath"] = "string"
                 },
                 Actions = new Dictionary<string, VTSAction>(),
                 Operators = new Dictionary<VTSOperator, VTSAction>(),
@@ -207,6 +235,11 @@ namespace Jay.VTS.Structures
                                 //throw FileNotFoundException((string)args[0].Fields["value"], frame);
                             }
                             caller.Fields["path"] = args[0];
+                            caller.Fields["fullPath"] = new VTSVariable() {
+                                Class = CoreStructures.VTSString, Mutable = false, Fields = new Dictionary<string, object>() {
+                                    ["value"] = Path.GetFullPath((string)args[0].Fields["value"])
+                                }
+                            };
                         }
                         catch(VTSException v) { throw v; }
                         catch(Exception _) {
@@ -276,6 +309,38 @@ namespace Jay.VTS.Structures
                             Class = CoreStructures.VTSString, Mutable = false,
                             Fields = new Dictionary<string, object>() {
                                 ["value"] = Directory.GetCurrentDirectory()
+                            }
+                        };
+                    }),
+                    ["getParent"] = ((caller, args, frame) => {
+                        if(args.Count != 0)
+                            throw VTSException.ArgCountException("File", "getParent", 0, (uint)args.Count, frame);
+                        string currPath = (string)((VTSVariable)caller.Fields["fullPath"]).Fields["value"];
+                        if(currPath == "/" || currPath == "") {
+                            throw new VTSException("IOError", frame, "Can't get parent of root.", null);
+                        }
+                        string[] parent = currPath.Split('/');
+                        if(parent.Length == 0) {
+                            throw new VTSException("IOError", frame, "Can't get parent of root.", null);
+                        }
+                        List<string> par = parent.ToList();
+                        par.RemoveAt(par.Count - 1);
+                        par.RemoveAt(par.Count - 1);
+                        return new VTSVariable() {
+                            Class = Interpreter.Instance.Classes["Directory"], Mutable = false,
+                            Fields = new Dictionary<string, object> () {
+                                ["path"] = new VTSVariable() {
+                                    Class = CoreStructures.VTSString, Mutable = false,
+                                    Fields = new Dictionary<string, object>() { 
+                                        ["value"] = string.Join("/", par) == "" ? "/" : (string.Join("/", par) + "/")
+                                    }
+                                },
+                                ["fullPath"] = new VTSVariable() {
+                                    Class = CoreStructures.VTSString, Mutable = false,
+                                    Fields = new Dictionary<string, object>() { 
+                                        ["value"] = string.Join("/", par) == "" ? "/" : (string.Join("/", par) + "/")
+                                    }
+                                }
                             }
                         };
                     })
