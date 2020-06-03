@@ -109,6 +109,9 @@ namespace Jay.VTS.Structures
                         if(args.Count != 1) {
                             throw VTSException.ArgCountException("File", "writeText", 1, (uint)args.Count, frame);
                         }
+                        if(args[0].Class != CoreStructures.VTSString) {
+                            throw VTSException.TypeException(CoreStructures.VTSString, args[0].Class, frame);
+                        }
                         try {
                             File.WriteAllText((string)((VTSVariable)caller.Fields["path"]).Fields["value"],
                                 ((VTSVariable)args[0]).ToString(frame));
@@ -150,6 +153,9 @@ namespace Jay.VTS.Structures
                     ["appendText"] = ((caller, args, frame) => {
                         if(args.Count != 1) {
                             throw VTSException.ArgCountException("File", "appendText", 1, (uint)args.Count, frame);
+                        }
+                        if(args[0].Class != CoreStructures.VTSString) {
+                            throw VTSException.TypeException(CoreStructures.VTSString, args[0].Class, frame);
                         }
                         try {
                             File.AppendAllText((string)((VTSVariable)caller.Fields["path"]).Fields["value"],
