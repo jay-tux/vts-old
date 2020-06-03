@@ -7,4 +7,8 @@ entry () {
     core.stdout("Working in " + outfile.getParent().fullPath + ".\n");
     dld = WebClient.new("https://github.com/jay-tux/vts");
     core.stdout("Preparing to download " + dld.url + "...\n");
+    result = dld.getString("GET");
+    core.stdout("Download succeeded. Trying to save to " + outfile.fullPath + "...\n");
+    outfile.writeText(result);
+    core.stdout("Done.\n");
 }
