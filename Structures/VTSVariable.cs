@@ -30,6 +30,7 @@ namespace Jay.VTS.Structures
             if(Class == null) return "~> (typeless)";
             if(Class.Actions == null) return "~> (" + Class.Name + ":actionless)";
             if(Class.Internals == null) return "~> (" + Class.Name + ":internal-less)";
+            if(Class == CoreStructures.VTSString) return (string)Fields["value"];
             if(Class.Actions.ContainsKey("toString") || Class.Internals.ContainsKey("toString")) {
                 VTSVariable res = Call("toString", caller, new List<VTSVariable>());
                 if(res == null) return "(void)";

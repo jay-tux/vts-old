@@ -1,0 +1,10 @@
+#vts <IO>;
+#vts <HTTP>;
+
+entry () {
+    /*core.typedump();*/
+    outfile = File.new("./result.htm");
+    core.stdout("Working in " + outfile.getParent().fullPath + ".\n");
+    dld = WebClient.new("https://github.com/jay-tux/vts");
+    core.stdout("Preparing to download " + dld.url + "...\n");
+}

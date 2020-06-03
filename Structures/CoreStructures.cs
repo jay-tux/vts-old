@@ -67,6 +67,23 @@ namespace Jay.VTS.Structures
                         throw VTSException.ArgCountException("core", "wait", 0, (uint)args.Count, frame);
                     Console.ReadKey();
                     return Void;
+                }),
+                ["typedump"] = ((caller, args, frame) => {
+                    if(args.Count != 0) 
+                        throw VTSException.ArgCountException("core", "typedump", 0, (uint)args.Count, frame);
+                    Console.WriteLine(" ===== Current Memory Structures: =====");
+                    Interpreter.Instance.Classes.ForEach(cls => {
+                        Console.WriteLine(" -> " + cls.Key + " [" + cls.Value.Actions.Keys.Count +" actions; " + 
+                            cls.Value.Internals.Keys.Count + " internals]");
+                        cls.Value.Fields.Keys.ForEach(fld => Console.WriteLine("   -> Field::" + fld));
+                        cls.Value.Actions.Values.ForEach(act => Console.WriteLine("   -> Action::" + act));
+                        cls.Value.Internals.Keys.ForEach(ntr => Console.WriteLine("   -> Internal::" + ntr));
+                        cls.Value.Operators.ForEach(x => Console.WriteLine("   -> Operator<" + x.Key + ">::" + x.Value));
+                    });
+                    Console.WriteLine(" ===== Current Modules: =====");
+                    Interpreter.Instance.VTSModuleStatus.ForEach(x => Console.WriteLine(x.Key + ": activated? " + x.Value));
+                    Console.WriteLine(" ===== End of Overview ===== \n\n");
+                    return Void;
                 })
             }
         };

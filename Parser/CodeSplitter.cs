@@ -94,6 +94,7 @@ namespace Jay.VTS.Parser
                                 Parent = current,
                                 Contents = new List<CodeBlock>(),
                             };
+                            Logger.Log("Currently at '" + chr + "':" + File + "@" + lineno, LogType.NOIGNORE);
                             inner.Split = new LineSplitter(inner, (File, lineno)).SplitTarget();
                             if(inner.Split.Inner[0].Type == ElementType.Class) {
                                 Logger.Log("Found class " + inner.Split.Inner[1].Content, LogType.PARSING);

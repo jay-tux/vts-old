@@ -15,10 +15,12 @@ namespace Jay.VTS
 	public class Interpreter
 	{
 		public Dictionary<string, Action> VTSModules = new Dictionary<string, Action>() {
-			["IO"] = () => IOStructures.AppendIOModule()
+			["IO"] = () => IOStructures.AppendIOModule(),
+			["HTTP"] = () => HTTPStructures.AppendHTTPModule()
 		};
 		public Dictionary<string, bool> VTSModuleStatus = new Dictionary<string, bool>() {
-			["IO"] = false
+			["IO"] = false,
+			["HTTP"] = false
 		};
 		private string _native;
 		public CodeBlock Pass;
