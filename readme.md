@@ -28,5 +28,14 @@ mono --debug <executable> <vts-script file>
 ```
 When not given a file to run, the interpreter will try to run with the ``--interactive`` mode, with hasn't been implemented yet.
 ## Quick Feature Overview
-VTS has a lot of features already; some of them will be listed here. For a detailed overview, see [Programmer's Guide](../blob/guide/programmer.md).
+VTS has a lot of features already; some of them will be listed here. For a detailed overview, see [Programmer's Guide](../guide/programmer.md).  
+ - Builtin string, float, int and list types
+ - Dynamic typing system
+ - Local file inclusion
+ - Custom classes and member methods (called actions)
+ - Builtin operator overloading support
+ - File IO module
+ - Variable and type overviews (dumps)
+
 ## Development Overview
+Because VTS contains a lot of classes and files, I have opted to move them into their own namespaces and directories. For a detailed overview of which class (and which method) does what, see [Developer's Guide](../guide/dev.md).
