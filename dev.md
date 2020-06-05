@@ -39,11 +39,15 @@ Classes in this namespace can be grouped by two: one which contains the data, an
    these classes transform code blocks into their (expression) parse (by splitting on the ``.``, `` ``, ``,``, ``()`` characters), see [LineElement and LineSplitter](../guide/Parser/LineElement.md).
  - ``class Expression``, ``class SplitExpression``, in ``/Parser/Expression.cs``, ``/Parser/SplitExpression.cs``;  
    these classes transform line element blocks (see LineElement's documentation) into postfix expressions, see [Expression and SplitExpression](../guide/Parser/Expression.md).
+
 ### Jay.VTS.Structures namespace
 Contains acutally two kinds of classes: the actual structures VTS contains (classes, actions, operators) and the builtin structures and modules (int, string, float, list, HTTP, IO).
  - Actual VTS Structures; in the files ``/Structures/VTSAction.cs``, ``/Structures/VTSClass.cs``, ``/Structures/VTSOperator.cs`` and ``/Structures/VTSVariable.cs``. For more info, see (respectively) [VTSAction](../Structures/VTSAction.md), [VTSClass](../Structures/VTSClass.md), [VTSOperator](../Structures/VTSOperator.md), [VTSVariable](../Structures/VTSVariable.md)
  - Builtin Structures; in the file ``/Structures/CoreStructures.cs``, see [CoreStructures](../Structures/Core.md).
  - Modules; in all other files. The builtin structures can be seen as the Core module, which is auto-imported, see the documentation on the modules, via the [Modules](../Structures/Modules.md) hub.
+
+### Jay.VTS.Enums namespace
+Contains currently only one enum, but refactoring should move some other enums there, see [Enums](../Enums.md).
 
 ### Jay.Xtend namespace
 Contains some extension methods for the builtin types.
@@ -51,3 +55,9 @@ Contains some extension methods for the builtin types.
  Adds some methods to the C# primitives, see [XtendPrimitive](../Xtend/XtendPrimitive.md).
  - ``static class XtendIEnumerable``, in ``/Xtend/XtendIEnumerable.cs``;  
  Adds some methods to the C# ``IEnumerable`` type, see [XtendIEnumerable](../Xtend/XtendIEnumerable.md).
+
+### Jay.Logging namespace
+ - ``public enum LogType``, in ``/Logger.cs``;  
+ Defines the logging types; should be moved to ``/Enums.cs``, see [Logging](../Logging.md).
+ - ``public class Logger``, in ``/Logger.cs``;  
+ The preprocessor-driven logger, see [Logging](../Logging.md).
