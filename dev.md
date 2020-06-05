@@ -44,3 +44,10 @@ Contains acutally two kinds of classes: the actual structures VTS contains (clas
  - Actual VTS Structures; in the files ``/Structures/VTSAction.cs``, ``/Structures/VTSClass.cs``, ``/Structures/VTSOperator.cs`` and ``/Structures/VTSVariable.cs``. For more info, see (respectively) [VTSAction](../Structures/VTSAction.md), [VTSClass](../Structures/VTSClass.md), [VTSOperator](../Structures/VTSOperator.md), [VTSVariable](../Structures/VTSVariable.md)
  - Builtin Structures; in the file ``/Structures/CoreStructures.cs``, see [CoreStructures](../Structures/Core.md).
  - Modules; in all other files. The builtin structures can be seen as the Core module, which is auto-imported, see the documentation on the modules, via the [Modules](../Structures/Modules.md) hub.
+
+### Jay.Xtend namespace
+Contains some extension methods for the builtin types.
+ - ``static class XtendPrimitive``, in ``/Xtend/XtendPrimitive.cs``;  
+ Adds some methods to the C# primitives, see [XtendPrimitive](../Xtend/XtendPrimitive.md).
+ - ``static class XtendIEnumerable``, in ``/Xtend/XtendIEnumerable.cs``;  
+ Adds some methods to the C# ``IEnumerable`` type, see [XtendIEnumerable](../Xtend/XtendIEnumerable.md).
