@@ -2,10 +2,10 @@
 ## Full Namespace Overview
 As VTS contains a large number of classes, each class will be described in its own file, as will each namespace. This file acts as a central hub to access each of those files:
  - ``namespace Jay.VTS`` (main namespace for all VTS-related classes)
-  - ``namespace Jay.VTS.Execution`` (contains execution-related classes, like ``StackFrame``, ...)
-  - ``namespace Jay.VTS.Parser`` (contains parsing-related classes, like ``Expression``, ...)
-  - ``namespace Jay.VTS.Structures`` (contains builtin VTS structures, like ``VTSClass``, ...)
-  - ``namespace Jay.VTS.Enums`` (contains an enum, but refactoring should move some enums there)
+   - ``namespace Jay.VTS.Execution`` (contains execution-related classes, like ``StackFrame``, ...)
+   - ``namespace Jay.VTS.Parser`` (contains parsing-related classes, like ``Expression``, ...)
+   - ``namespace Jay.VTS.Structures`` (contains builtin VTS structures, like ``VTSClass``, ...)
+   - ``namespace Jay.VTS.Enums`` (contains an enum, but refactoring should move some enums there)
  - ``namespace Jay.Xtend`` (contains a few extension methods for builtin C# classes)
  - ``namespace Jay.Logging`` (contains a simple preprocessor-driven logger)
 
